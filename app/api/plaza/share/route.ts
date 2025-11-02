@@ -3,8 +3,13 @@ import { PlazaManager } from "@/lib/kv-storage"
 
 export const runtime = 'edge'
 
+// 获取环境绑定
+function getEnv(request: Request): Env {
+  return (request as any).env || (globalThis as any).process?.env || {}
+}
+
 // POST - 分享书签到广场
-export async function POST(request: Request, context: { env: Env }) {
+export async function POST(request: Request) {
   try {
     const { bookmark, shareSecret, displayName } = await request.json()
 
@@ -14,10 +19,11 @@ export async function POST(request: Request, context: { env: Env }) {
 
     // 验证书签数据
     if (!bookmark.title || !bookmark.url) {
-      return NextResponse.json({ error: "书签数据不完整，缺少标题或链接" }, { status: 400 })
+      return NextResponse.json({ error: "书签数据不宅整，缺少标题或链接" }, { status: 400 })
     }
 
-    const plazaManager = new PlazaManager(context.env.PLAZA_KV)
+    const env = getEnv(request)
+    const plazaManager = new PlazaManager(env.PLAZA_KV)
     
     try {
       const result = await plazaManager.addShare(bookmark, shareSecret, displayName)

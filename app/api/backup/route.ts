@@ -3,8 +3,13 @@ import { BackupManager } from "@/lib/kv-storage"
 
 export const runtime = 'edge'
 
+// 获取环境绑定
+function getEnv(request: Request): Env {
+  return (request as any).env || (globalThis as any).process?.env || {}
+}
+
 // POST - 备份数据
-export async function POST(request: Request, context: { env: Env }) {
+export async function POST(request: Request) {
   try {
     const { key, secret, data } = await request.json()
 
@@ -12,7 +17,15 @@ export async function POST(request: Request, context: { env: Env }) {
       return NextResponse.json({ error: "缺少必要字段：key, secret, data" }, { status: 400 })
     }
 
-    const backupManager = new BackupManager(context.env.BOOKMARKS_KV)
+    const env = getEnv(request)
+    
+    // 检查 KV 绑定是否存在
+    if (!env.BOOKMARKS_KV) {
+      console.error("BOOKMARKS_KV 未绑定, env keys:", Object.keys(env))
+      return NextResponse.json({ error: "KV 存储未配置" }, { status: 500 })
+    }
+
+    const backupManager = new BackupManager(env.BOOKMARKS_KV)
     const result = await backupManager.saveBackup(key, secret, data)
 
     return NextResponse.json({
@@ -23,12 +36,16 @@ export async function POST(request: Request, context: { env: Env }) {
     })
   } catch (error) {
     console.error("备份错误:", error)
-    return NextResponse.json({ error: "备份失败，请稍后重试" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "未知错误"
+    return NextResponse.json({ 
+      error: "备份失败，请稍后重试",
+      details: errorMessage 
+    }, { status: 500 })
   }
 }
 
 // GET - 恢复数据
-export async function GET(request: Request, context: { env: Env }) {
+export async function GET(request: Request) {
   try {
     const key = request.headers.get("X-Cloud-Key")
     const secret = request.headers.get("X-Cloud-Secret")
@@ -37,7 +54,14 @@ export async function GET(request: Request, context: { env: Env }) {
       return NextResponse.json({ error: "缺少认证凭据" }, { status: 400 })
     }
 
-    const backupManager = new BackupManager(context.env.BOOKMARKS_KV)
+    const env = getEnv(request)
+    
+    if (!env.BOOKMARKS_KV) {
+      console.error("BOOKMARKS_KV 未绑定")
+      return NextResponse.json({ error: "KV 存储未配置" }, { status: 500 })
+    }
+
+    const backupManager = new BackupManager(env.BOOKMARKS_KV)
     const result = await backupManager.getBackup(key, secret)
 
     if (!result) {
@@ -50,12 +74,16 @@ export async function GET(request: Request, context: { env: Env }) {
     if (error instanceof Error && error.message === '凭据验证失败') {
       return NextResponse.json({ error: error.message }, { status: 401 })
     }
-    return NextResponse.json({ error: "数据恢复失败，请稍后重试" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "未知错误"
+    return NextResponse.json({ 
+      error: "数据恢复失败，请稍后重试",
+      details: errorMessage 
+    }, { status: 500 })
   }
 }
 
 // PUT - 更新备份
-export async function PUT(request: Request, context: { env: Env }) {
+export async function PUT(request: Request) {
   try {
     const { key, secret, data } = await request.json()
 
@@ -63,7 +91,14 @@ export async function PUT(request: Request, context: { env: Env }) {
       return NextResponse.json({ error: "缺少必要字段：key, secret, data" }, { status: 400 })
     }
 
-    const backupManager = new BackupManager(context.env.BOOKMARKS_KV)
+    const env = getEnv(request)
+    
+    if (!env.BOOKMARKS_KV) {
+      console.error("BOOKMARKS_KV 未绑定")
+      return NextResponse.json({ error: "KV 存储未配置" }, { status: 500 })
+    }
+
+    const backupManager = new BackupManager(env.BOOKMARKS_KV)
     
     // 先检查是否存在
     const existing = await backupManager.getBackup(key, secret)
@@ -84,6 +119,10 @@ export async function PUT(request: Request, context: { env: Env }) {
     if (error instanceof Error && error.message === '凭据验证失败') {
       return NextResponse.json({ error: error.message }, { status: 401 })
     }
-    return NextResponse.json({ error: "备份更新失败，请稍后重试" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "未知错误"
+    return NextResponse.json({ 
+      error: "备份更新失败，请稍后重试",
+      details: errorMessage 
+    }, { status: 500 })
   }
 }

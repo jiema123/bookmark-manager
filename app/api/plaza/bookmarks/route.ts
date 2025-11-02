@@ -3,10 +3,16 @@ import { PlazaManager } from "@/lib/kv-storage"
 
 export const runtime = 'edge'
 
+// 获取环境绑定
+function getEnv(request: Request): Env {
+  return (request as any).env || (globalThis as any).process?.env || {}
+}
+
 // GET - 获取广场书签列表
-export async function GET(request: Request, context: { env: Env }) {
+export async function GET(request: Request) {
   try {
-    const plazaManager = new PlazaManager(context.env.PLAZA_KV)
+    const env = getEnv(request)
+    const plazaManager = new PlazaManager(env.PLAZA_KV)
     const publicBookmarks = await plazaManager.getPublicBookmarks()
 
     return NextResponse.json({

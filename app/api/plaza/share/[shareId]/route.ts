@@ -3,20 +3,26 @@ import { PlazaManager } from "@/lib/kv-storage"
 
 export const runtime = 'edge'
 
+// 获取环境绑定
+function getEnv(request: Request): Env {
+  return (request as any).env || (globalThis as any).process?.env || {}
+}
+
 // DELETE - 删除分享的书签
 export async function DELETE(
   request: Request, 
-  context: { params: { shareId: string }, env: Env }
+  context: { params: Promise<{ shareId: string }> }
 ) {
   try {
-    const { shareId } = context.params
+    const { shareId } = await context.params
     const { shareSecret } = await request.json()
 
     if (!shareSecret) {
       return NextResponse.json({ error: "缺少分享密钥" }, { status: 400 })
     }
 
-    const plazaManager = new PlazaManager(context.env.PLAZA_KV)
+    const env = getEnv(request)
+    const plazaManager = new PlazaManager(env.PLAZA_KV)
     
     try {
       await plazaManager.deleteShare(shareId, shareSecret)
