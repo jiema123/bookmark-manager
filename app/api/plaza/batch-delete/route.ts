@@ -1,12 +1,10 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { writeFile, readFile } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { NextResponse } from "next/server"
+import { PlazaManager } from "@/lib/kv-storage"
 
-const PLAZA_INDEX_FILE = path.join(process.cwd(), "plaza", "index.json")
+export const runtime = 'edge'
 
 // DELETE - 批量删除分享
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: Request, context: { env: Env }) {
   try {
     const { shareIds, shareSecret } = await request.json()
 
@@ -18,41 +16,22 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "缺少分享密钥" }, { status: 400 })
     }
 
-    if (!existsSync(PLAZA_INDEX_FILE)) {
-      return NextResponse.json({ error: "没有找到分享数据" }, { status: 404 })
-    }
-
-    const data = await readFile(PLAZA_INDEX_FILE, "utf-8")
-    let plazaData = JSON.parse(data)
-
-    let deletedCount = 0
-    const failedIds: string[] = []
-
-    // 筛选出要删除的分享并验证权限
-    plazaData = plazaData.filter((item: any) => {
-      if (shareIds.includes(item.shareId)) {
-        // 验证删除权限
-        if (item.shareSecret === shareSecret) {
-          deletedCount++
-          return false // 删除此项
-        } else {
-          failedIds.push(item.shareId)
-          return true // 保留此项
-        }
+    const plazaManager = new PlazaManager(context.env.PLAZA_KV)
+    
+    try {
+      const result = await plazaManager.batchDeleteShares(shareIds, shareSecret)
+      
+      return NextResponse.json({
+        success: true,
+        message: `批量删除完成`,
+        deletedCount: result.deleted,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        return NextResponse.json({ error: error.message }, { status: 401 })
       }
-      return true // 保留此项
-    })
-
-    // 写回文件
-    await writeFile(PLAZA_INDEX_FILE, JSON.stringify(plazaData, null, 2))
-
-    return NextResponse.json({
-      success: true,
-      message: `批量删除完成`,
-      deletedCount,
-      failedCount: failedIds.length,
-      failedIds: failedIds.length > 0 ? failedIds : undefined,
-    })
+      throw error
+    }
   } catch (error) {
     console.error("批量删除错误:", error)
     return NextResponse.json({ error: "批量删除失败，请稍后重试" }, { status: 500 })

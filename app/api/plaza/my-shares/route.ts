@@ -1,12 +1,10 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { readFile } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { NextResponse } from "next/server"
+import { PlazaManager } from "@/lib/kv-storage"
 
-const PLAZA_INDEX_FILE = path.join(process.cwd(), "plaza", "index.json")
+export const runtime = 'edge'
 
 // GET - 获取用户的分享列表
-export async function GET(request: NextRequest) {
+export async function GET(request: Request, context: { env: Env }) {
   try {
     const { searchParams } = new URL(request.url)
     const secret = searchParams.get("secret")
@@ -15,28 +13,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "缺少分享密钥" }, { status: 400 })
     }
 
-    if (!existsSync(PLAZA_INDEX_FILE)) {
-      return NextResponse.json({ bookmarks: [] })
-    }
-
-    const data = await readFile(PLAZA_INDEX_FILE, "utf-8")
-    const plazaData = JSON.parse(data)
-
-    // 筛选出用户的分享
-    const userShares = plazaData.filter((item: any) => item.shareSecret === secret)
-
-    // 返回用户分享的书签（包含shareSecret用于前端验证）
-    const userBookmarks = userShares.map((item: any) => ({
-      shareId: item.shareId,
-      ...item.bookmark,
-      sharedBy: item.sharedBy,
-      sharedAt: item.sharedAt,
-      likes: item.likes || 0,
-      shareSecret: item.shareSecret,
-    }))
-
-    // 按分享时间倒序排列
-    userBookmarks.sort((a: any, b: any) => new Date(b.sharedAt).getTime() - new Date(a.sharedAt).getTime())
+    const plazaManager = new PlazaManager(context.env.PLAZA_KV)
+    const userBookmarks = await plazaManager.getMyShares(secret)
 
     return NextResponse.json({
       bookmarks: userBookmarks,

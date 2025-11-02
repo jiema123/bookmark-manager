@@ -1,0 +1,6 @@
+# Cloudflare Workers 本地开发环境变量示例
+# 复制此文件为 .dev.vars 并填入实际值
+
+# KV Namespace IDs (从 Cloudflare Dashboard 获取)
+# BOOKMARKS_KV_ID=your-kv-namespace-id
+# PLAZA_KV_ID=your-plaza-kv-namespace-id

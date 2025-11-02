@@ -1,28 +1,10 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { createHash } from "crypto"
-import { writeFile, readFile, mkdir } from "fs/promises"
-import { existsSync } from "fs"
-import path from "path"
+import { NextResponse } from "next/server"
+import { BackupManager } from "@/lib/kv-storage"
 
-const BACKUP_DIR = path.join(process.cwd(), "backups")
-
-// 确保备份目录存在
-async function ensureBackupDir() {
-  if (!existsSync(BACKUP_DIR)) {
-    await mkdir(BACKUP_DIR, { recursive: true })
-  }
-}
-
-// 生成文件名 - 基于key和secret的MD5哈希
-function generateFileName(key: string, secret: string): string {
-  const hash = createHash("md5")
-    .update(key + secret)
-    .digest("hex")
-  return `backup_${hash}.json`
-}
+export const runtime = 'edge'
 
 // POST - 备份数据
-export async function POST(request: NextRequest) {
+export async function POST(request: Request, context: { env: Env }) {
   try {
     const { key, secret, data } = await request.json()
 
@@ -30,34 +12,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "缺少必要字段：key, secret, data" }, { status: 400 })
     }
 
-    await ensureBackupDir()
-
-    const fileName = generateFileName(key, secret)
-    const filePath = path.join(BACKUP_DIR, fileName)
-
-    // 生成用户标识哈希
-    const userHash = createHash("md5")
-      .update(key + secret)
-      .digest("hex")
-
-    const backupData = {
-      bookmarks: data,
-      updatedAt: new Date().toISOString(),
-      userHash: userHash,
-      metadata: {
-        totalBookmarks: Array.isArray(data) ? data.length : 0,
-        backupVersion: "1.0",
-      },
-    }
-
-    await writeFile(filePath, JSON.stringify(backupData, null, 2))
+    const backupManager = new BackupManager(context.env.BOOKMARKS_KV)
+    const result = await backupManager.saveBackup(key, secret, data)
 
     return NextResponse.json({
       success: true,
       message: "数据备份成功",
-      hash: userHash.substring(0, 8), // 只返回部分哈希用于显示
-      fileName: fileName,
-      totalBookmarks: backupData.metadata.totalBookmarks,
+      hash: result.hash,
+      totalBookmarks: result.totalBookmarks,
     })
   } catch (error) {
     console.error("备份错误:", error)
@@ -66,7 +28,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET - 恢复数据
-export async function GET(request: NextRequest) {
+export async function GET(request: Request, context: { env: Env }) {
   try {
     const key = request.headers.get("X-Cloud-Key")
     const secret = request.headers.get("X-Cloud-Secret")
@@ -75,39 +37,25 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "缺少认证凭据" }, { status: 400 })
     }
 
-    await ensureBackupDir()
+    const backupManager = new BackupManager(context.env.BOOKMARKS_KV)
+    const result = await backupManager.getBackup(key, secret)
 
-    const fileName = generateFileName(key, secret)
-    const filePath = path.join(BACKUP_DIR, fileName)
-
-    if (!existsSync(filePath)) {
+    if (!result) {
       return NextResponse.json({ error: "未找到对应的备份文件，请检查您的凭据是否正确" }, { status: 404 })
     }
 
-    const backupData = JSON.parse(await readFile(filePath, "utf-8"))
-
-    // 验证用户身份
-    const expectedHash = createHash("md5")
-      .update(key + secret)
-      .digest("hex")
-
-    if (backupData.userHash !== expectedHash) {
-      return NextResponse.json({ error: "凭据验证失败" }, { status: 401 })
-    }
-
-    return NextResponse.json({
-      bookmarks: backupData.bookmarks || [],
-      updatedAt: backupData.updatedAt,
-      metadata: backupData.metadata || {},
-    })
+    return NextResponse.json(result)
   } catch (error) {
     console.error("恢复错误:", error)
+    if (error instanceof Error && error.message === '凭据验证失败') {
+      return NextResponse.json({ error: error.message }, { status: 401 })
+    }
     return NextResponse.json({ error: "数据恢复失败，请稍后重试" }, { status: 500 })
   }
 }
 
 // PUT - 更新备份
-export async function PUT(request: NextRequest) {
+export async function PUT(request: Request, context: { env: Env }) {
   try {
     const { key, secret, data } = await request.json()
 
@@ -115,47 +63,27 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "缺少必要字段：key, secret, data" }, { status: 400 })
     }
 
-    await ensureBackupDir()
-
-    const fileName = generateFileName(key, secret)
-    const filePath = path.join(BACKUP_DIR, fileName)
-
-    // 检查备份是否存在
-    if (!existsSync(filePath)) {
+    const backupManager = new BackupManager(context.env.BOOKMARKS_KV)
+    
+    // 先检查是否存在
+    const existing = await backupManager.getBackup(key, secret)
+    if (!existing) {
       return NextResponse.json({ error: "备份文件不存在，请先创建备份" }, { status: 404 })
     }
 
-    // 验证现有备份
-    const existingData = JSON.parse(await readFile(filePath, "utf-8"))
-    const expectedHash = createHash("md5")
-      .update(key + secret)
-      .digest("hex")
-
-    if (existingData.userHash !== expectedHash) {
-      return NextResponse.json({ error: "凭据验证失败" }, { status: 401 })
-    }
-
-    // 更新备份
-    const updatedData = {
-      bookmarks: data,
-      updatedAt: new Date().toISOString(),
-      userHash: expectedHash,
-      metadata: {
-        totalBookmarks: Array.isArray(data) ? data.length : 0,
-        backupVersion: "1.0",
-        previousUpdate: existingData.updatedAt,
-      },
-    }
-
-    await writeFile(filePath, JSON.stringify(updatedData, null, 2))
+    // 保存更新
+    const result = await backupManager.saveBackup(key, secret, data)
 
     return NextResponse.json({
       success: true,
       message: "备份更新成功",
-      totalBookmarks: updatedData.metadata.totalBookmarks,
+      totalBookmarks: result.totalBookmarks,
     })
   } catch (error) {
     console.error("更新错误:", error)
+    if (error instanceof Error && error.message === '凭据验证失败') {
+      return NextResponse.json({ error: error.message }, { status: 401 })
+    }
     return NextResponse.json({ error: "备份更新失败，请稍后重试" }, { status: 500 })
   }
 }
