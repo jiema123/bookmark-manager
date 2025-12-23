@@ -45,6 +45,7 @@ import { Separator } from "@/components/ui/separator"
 import AISettingsDialog from "./components/ai-settings-dialog"
 import FetchMetadataButton from "./components/fetch-metadata-button"
 import BatchManageDialog from "./components/batch-manage-dialog"
+import SnowEffect from "./components/snow-effect"
 
 interface Bookmark {
   id: string
@@ -107,7 +108,7 @@ export default function BookmarkManager() {
   })
   const [sharedBookmarks, setSharedBookmarks] = useState<SharedBookmark[]>([])
   const [mySharedBookmarks, setMySharedBookmarks] = useState<SharedBookmark[]>([])
-  const [activeTab, setActiveTab] = useState("my-bookmarks")
+  const [activeTab, setActiveTab] = useState("plaza")
   const [plazaSearchQuery, setPlazaSearchQuery] = useState("")
   const [plazaSelectedTags, setPlazaSelectedTags] = useState<string[]>(["全部"])
   const [selectedShares, setSelectedShares] = useState<string[]>([])
@@ -130,22 +131,9 @@ export default function BookmarkManager() {
 
   // 预设标签
   const presetTags = [
-    "开发",
-    "代码",
     "开源",
     "设计",
-    "灵感",
-    "UI",
-    "阅读",
-    "写作",
-    "博客",
-    "协作",
-    "原型",
-    "百度",
-    "工具",
-    "学习",
-    "娱乐",
-    "新闻",
+    "灵感"
   ]
 
   // 从localStorage加载数据
@@ -191,6 +179,12 @@ export default function BookmarkManager() {
       }
     }
   }, [])
+  // Fetch plaza bookmarks when tab changes
+  useEffect(() => {
+    if (activeTab === "plaza") {
+      fetchPlazaBookmarks()
+    }
+  }, [activeTab])
 
   // 保存到localStorage
   const saveToStorage = (data: Bookmark[]) => {
@@ -337,9 +331,9 @@ export default function BookmarkManager() {
           ...metadata.tags,
           ...(prev.tags
             ? prev.tags
-                .split(",")
-                .map((t) => t.trim())
-                .filter(Boolean)
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean)
             : []),
         ].join(", "),
       }))
@@ -1176,14 +1170,15 @@ export default function BookmarkManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+      <SnowEffect />
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* 顶部导航栏 */}
         <div className="flex items-center justify-between p-6">
           <div className="flex items-center gap-3">
             <Sparkles className="w-8 h-8 text-purple-400" />
             <h1 className="text-2xl font-bold text-white">个人导航</h1>
-          <script defer src="https://umami-jiema66.env.pm/script.js" data-website-id="188469dd-eaf0-4e5d-9cd9-d93cd78fbf79"></script>
+            <script defer src="https://umami-jiema66.env.pm/script.js" data-website-id="188469dd-eaf0-4e5d-9cd9-d93cd78fbf79"></script>
           </div>
           <div className="flex gap-3">
             <Button
@@ -1376,11 +1371,10 @@ export default function BookmarkManager() {
                   key="all"
                   variant="outline"
                   size="sm"
-                  className={`rounded-full px-4 py-2 transition-all ${
-                    selectedTags.includes("全部") || selectedTags.length === 0
-                      ? "bg-purple-600 border-purple-500 text-white"
-                      : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
-                  }`}
+                  className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes("全部") || selectedTags.length === 0
+                    ? "bg-purple-600 border-purple-500 text-white"
+                    : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                    }`}
                   onClick={() => setSelectedTags(["全部"])}
                 >
                   全部
@@ -1390,11 +1384,10 @@ export default function BookmarkManager() {
                     key={tag}
                     variant="outline"
                     size="sm"
-                    className={`rounded-full px-4 py-2 transition-all ${
-                      selectedTags.includes(tag)
-                        ? "bg-purple-600 border-purple-500 text-white"
-                        : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
-                    }`}
+                    className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes(tag)
+                      ? "bg-purple-600 border-purple-500 text-white"
+                      : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                      }`}
                     onClick={() => toggleTag(tag)}
                   >
                     {tag}
@@ -1531,7 +1524,7 @@ export default function BookmarkManager() {
                           alt={bookmark.title}
                           className="w-full h-48 object-cover"
                           onError={(e) => {
-                            ;(e.target as HTMLImageElement).style.display = "none"
+                            ; (e.target as HTMLImageElement).style.display = "none"
                           }}
                         />
                       ) : (
@@ -1541,7 +1534,7 @@ export default function BookmarkManager() {
                             alt=""
                             className="w-16 h-16 opacity-50"
                             onError={(e) => {
-                              ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
+                              ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
                             }}
                           />
                         </div>
@@ -1599,7 +1592,7 @@ export default function BookmarkManager() {
                           alt=""
                           className="w-8 h-8 rounded flex-shrink-0 mt-1"
                           onError={(e) => {
-                            ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
+                            ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
                           }}
                         />
                         <div className="flex-1 min-w-0">
@@ -1664,11 +1657,10 @@ export default function BookmarkManager() {
                 <div className="flex flex-wrap justify-center gap-4">
                   <Button
                     variant="outline"
-                    className={`${
-                      showMySharesOnly
-                        ? "bg-purple-600 border-purple-500 text-white"
-                        : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
-                    }`}
+                    className={`${showMySharesOnly
+                      ? "bg-purple-600 border-purple-500 text-white"
+                      : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                      }`}
                     onClick={() => {
                       setShowMySharesOnly(!showMySharesOnly)
                       if (!showMySharesOnly) {
@@ -1760,7 +1752,7 @@ export default function BookmarkManager() {
                                 alt=""
                                 className="w-8 h-8 rounded flex-shrink-0"
                                 onError={(e) => {
-                                  ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
+                                  ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
                                 }}
                               />
                               <div className="flex-1 min-w-0">
@@ -1794,11 +1786,10 @@ export default function BookmarkManager() {
                       key="all"
                       variant="outline"
                       size="sm"
-                      className={`rounded-full px-3 py-1 text-xs transition-all ${
-                        plazaSelectedTags.includes("全部") || plazaSelectedTags.length === 0
-                          ? "bg-purple-600 border-purple-500 text-white"
-                          : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
-                      }`}
+                      className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes("全部") || plazaSelectedTags.length === 0
+                        ? "bg-purple-600 border-purple-500 text-white"
+                        : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                        }`}
                       onClick={() => setPlazaSelectedTags(["全部"])}
                     >
                       全部
@@ -1808,11 +1799,10 @@ export default function BookmarkManager() {
                         key={tag}
                         variant="outline"
                         size="sm"
-                        className={`rounded-full px-3 py-1 text-xs transition-all ${
-                          plazaSelectedTags.includes(tag)
-                            ? "bg-purple-600 border-purple-500 text-white"
-                            : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
-                        }`}
+                        className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes(tag)
+                          ? "bg-purple-600 border-purple-500 text-white"
+                          : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                          }`}
                         onClick={() => togglePlazaTag(tag)}
                       >
                         {tag}
@@ -1836,7 +1826,7 @@ export default function BookmarkManager() {
                           alt={bookmark.title}
                           className="w-full h-48 object-cover"
                           onError={(e) => {
-                            ;(e.target as HTMLImageElement).style.display = "none"
+                            ; (e.target as HTMLImageElement).style.display = "none"
                           }}
                         />
                       ) : (
@@ -1846,7 +1836,7 @@ export default function BookmarkManager() {
                             alt=""
                             className="w-16 h-16 opacity-50"
                             onError={(e) => {
-                              ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
+                              ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
                             }}
                           />
                         </div>
@@ -1859,7 +1849,7 @@ export default function BookmarkManager() {
                           alt=""
                           className="w-8 h-8 rounded flex-shrink-0 mt-1"
                           onError={(e) => {
-                            ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
+                            ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
                           }}
                         />
                         <div className="flex-1 min-w-0">
@@ -2020,11 +2010,10 @@ export default function BookmarkManager() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          className={`justify-start text-left ${
-                            currentEditingTags.includes(tag)
-                              ? "bg-purple-600 border-purple-500 text-white"
-                              : "bg-slate-700 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
-                          }`}
+                          className={`justify-start text-left ${currentEditingTags.includes(tag)
+                            ? "bg-purple-600 border-purple-500 text-white"
+                            : "bg-slate-700 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                            }`}
                           onClick={() => toggleTagInSelector(tag)}
                         >
                           <Checkbox checked={currentEditingTags.includes(tag)} className="mr-2 h-3 w-3" />
@@ -2172,12 +2161,12 @@ export default function BookmarkManager() {
                           setEditingBookmark((prev) =>
                             prev
                               ? {
-                                  ...prev,
-                                  tags: e.target.value
-                                    .split(",")
-                                    .map((tag) => tag.trim())
-                                    .filter((tag) => tag),
-                                }
+                                ...prev,
+                                tags: e.target.value
+                                  .split(",")
+                                  .map((tag) => tag.trim())
+                                  .filter((tag) => tag),
+                              }
                               : null,
                           )
                         }

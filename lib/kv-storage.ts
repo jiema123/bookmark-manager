@@ -19,7 +19,7 @@ const PLAZA_INDEX_KEY = 'plaza:index'
 export async function generateBackupKey(key: string, secret: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(key + secret)
-  
+
   try {
     const hash = await crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hash))
@@ -34,16 +34,16 @@ export async function generateBackupKey(key: string, secret: string): Promise<st
  * 备份管理器
  */
 export class BackupManager {
-  constructor(private kv: KVNamespace) {}
+  constructor(private kv: KVNamespace) { }
 
   /**
    * 保存备份
    */
   async saveBackup(key: string, secret: string, data: any) {
     const backupKey = await generateBackupKey(key, secret)
-    
+
     const userHash = await this.generateUserHash(key, secret)
-    
+
     const backupData = {
       bookmarks: data,
       updatedAt: new Date().toISOString(),
@@ -55,7 +55,7 @@ export class BackupManager {
     }
 
     await this.kv.put(backupKey, JSON.stringify(backupData))
-    
+
     return {
       success: true,
       hash: userHash.substring(0, 8),
@@ -69,7 +69,7 @@ export class BackupManager {
   async getBackup(key: string, secret: string) {
     const backupKey = await generateBackupKey(key, secret)
     const data = await this.kv.get(backupKey, 'text')
-    
+
     if (!data) {
       return null
     }
@@ -104,12 +104,16 @@ export class BackupManager {
  * 广场管理器
  */
 export class PlazaManager {
-  constructor(private kv: KVNamespace) {}
+  constructor(private kv: KVNamespace) { }
 
   /**
    * 获取广场索引
    */
   async getIndex(): Promise<any[]> {
+    if (!this.kv) {
+      console.warn('PLAZA_KV not bound, returning empty list')
+      return []
+    }
     const data = await this.kv.get(PLAZA_INDEX_KEY, 'text')
     return data ? JSON.parse(data) : []
   }
@@ -168,7 +172,7 @@ export class PlazaManager {
    */
   async getPublicBookmarks() {
     const plazaData = await this.getIndex()
-    
+
     // 移除敏感信息
     const publicBookmarks = plazaData.map((item: any) => ({
       shareId: item.shareId,
@@ -179,7 +183,7 @@ export class PlazaManager {
     }))
 
     // 按分享时间倒序
-    publicBookmarks.sort((a: any, b: any) => 
+    publicBookmarks.sort((a: any, b: any) =>
       new Date(b.sharedAt).getTime() - new Date(a.sharedAt).getTime()
     )
 
@@ -192,7 +196,7 @@ export class PlazaManager {
   async getMyShares(shareSecret: string) {
     const plazaData = await this.getIndex()
     const myShares = plazaData.filter((item: any) => item.shareSecret === shareSecret)
-    
+
     return myShares.map((item: any) => ({
       shareId: item.shareId,
       ...item.bookmark,
@@ -229,7 +233,7 @@ export class PlazaManager {
    */
   async batchDeleteShares(shareIds: string[], shareSecret: string) {
     const plazaData = await this.getIndex()
-    
+
     // 验证所有分享是否属于该用户
     for (const shareId of shareIds) {
       const share = plazaData.find((item: any) => item.shareId === shareId)
@@ -241,9 +245,9 @@ export class PlazaManager {
     const newData = plazaData.filter((item: any) => !shareIds.includes(item.shareId))
     await this.saveIndex(newData)
 
-    return { 
-      success: true, 
-      deleted: shareIds.length 
+    return {
+      success: true,
+      deleted: shareIds.length
     }
   }
 
