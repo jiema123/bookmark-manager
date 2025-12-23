@@ -1176,7 +1176,7 @@ export default function BookmarkManager() {
         {/* 顶部导航栏 */}
         <div className="flex items-center justify-between p-6">
           <div className="flex items-center gap-3">
-            <Sparkles className="w-8 h-8 text-purple-400" />
+            <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain hover:rotate-12 transition-transform duration-300" />
             <h1 className="text-2xl font-bold text-white">个人导航</h1>
             <script defer src="https://umami-jiema66.env.pm/script.js" data-website-id="188469dd-eaf0-4e5d-9cd9-d93cd78fbf79"></script>
           </div>
