@@ -1,4 +1,5 @@
 # 书签管理器
+体验网址：[https://home.justnow.uk/](https://home.justnow.uk/)
 
 一个基于 Next.js 的现代化书签管理应用，支持书签的增删改查、批量管理、云端同步和广场分享功能。
 
