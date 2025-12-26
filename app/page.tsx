@@ -1170,20 +1170,24 @@ export default function BookmarkManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+    <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden selection:bg-primary/30">
       <SnowEffect />
+      {/* Ambient Background Glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="fixed bottom-0 right-0 w-[800px] h-[600px] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none z-0" />
+
       <div className="max-w-7xl mx-auto relative z-10">
         {/* 顶部导航栏 */}
         <div className="flex items-center justify-between p-6">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain hover:rotate-12 transition-transform duration-300" />
-            <h1 className="text-2xl font-bold text-white">个人导航</h1>
+            <h1 className="text-2xl font-bold text-white">JieMa66</h1>
             <script defer src="https://umami-jiema66.env.pm/script.js" data-website-id="188469dd-eaf0-4e5d-9cd9-d93cd78fbf79"></script>
           </div>
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="bg-purple-800/50 border-purple-600 text-white hover:bg-purple-700/50"
+              className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
               onClick={() => setActiveTab("my-bookmarks")}
             >
               <Home className="w-4 h-4 mr-2" />
@@ -1191,7 +1195,7 @@ export default function BookmarkManager() {
             </Button>
             <Button
               variant="outline"
-              className="bg-purple-800/50 border-purple-600 text-white hover:bg-purple-700/50"
+              className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
               onClick={() => {
                 setActiveTab("plaza")
                 fetchPlazaBookmarks()
@@ -1209,7 +1213,9 @@ export default function BookmarkManager() {
             <TabsContent value="my-bookmarks" className="space-y-8">
               {/* 标语 */}
               <div className="text-center py-12">
-                <h2 className="text-4xl font-bold text-white mb-4">智能管理您的常用网页和资源</h2>
+                <h2 className="text-7xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 mb-8 tracking-tight glow-text leading-tight py-2">
+                  赛博智库 · 链接无限
+                </h2>
               </div>
 
               {/* 功能按钮组 */}
@@ -1218,7 +1224,7 @@ export default function BookmarkManager() {
                   <Button
                     onClick={() => document.getElementById("import-file-input")?.click()}
                     variant="outline"
-                    className="bg-purple-800/30 border-purple-600/50 text-white hover:bg-purple-700/50"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     导入书签
@@ -1235,7 +1241,7 @@ export default function BookmarkManager() {
                   <Button
                     onClick={() => document.getElementById("import-browser-bookmarks-input")?.click()}
                     variant="outline"
-                    className="bg-purple-800/30 border-purple-600/50 text-white hover:bg-purple-700/50"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                   >
                     <FileText className="w-4 h-4 mr-2" />
                     导入浏览器收藏夹
@@ -1251,7 +1257,7 @@ export default function BookmarkManager() {
                 <Button
                   onClick={exportData}
                   variant="outline"
-                  className="bg-purple-800/30 border-purple-600/50 text-white hover:bg-purple-700/50"
+                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   导出JSON
@@ -1260,13 +1266,13 @@ export default function BookmarkManager() {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="bg-purple-800/30 border-purple-600/50 text-white hover:bg-purple-700/50"
+                      className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                     >
                       <Cloud className="w-4 h-4 mr-2" />
                       云端备份
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-slate-800 border-purple-600">
+                  <DialogContent className="bg-card border-border">
                     <DialogHeader>
                       <DialogTitle className="text-white flex items-center gap-2">
                         <Cloud className="w-5 h-5" />
@@ -1274,7 +1280,7 @@ export default function BookmarkManager() {
                       </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
-                      <div className="text-sm text-purple-200 bg-purple-900/30 p-3 rounded-lg">
+                      <div className="text-sm text-muted-foreground bg-purple-900/30 p-3 rounded-lg">
                         <p>💡 提示：不同的密钥和密码组合会创建独立的备份文件</p>
                         <p>您可以使用多组凭据管理不同的书签集合</p>
                       </div>
@@ -1287,7 +1293,7 @@ export default function BookmarkManager() {
                           value={cloudSettings.key}
                           onChange={(e) => setCloudSettings((prev) => ({ ...prev, key: e.target.value }))}
                           placeholder="输入您的密钥"
-                          className="mt-1 bg-slate-700 border-purple-600 text-white"
+                          className="mt-1 bg-secondary/40 border-white/10 text-white"
                         />
                       </div>
                       <div>
@@ -1300,25 +1306,25 @@ export default function BookmarkManager() {
                           value={cloudSettings.secret}
                           onChange={(e) => setCloudSettings((prev) => ({ ...prev, secret: e.target.value }))}
                           placeholder="输入您的密码"
-                          className="mt-1 bg-slate-700 border-purple-600 text-white"
+                          className="mt-1 bg-secondary/40 border-white/10 text-white"
                         />
                       </div>
                       <div className="grid grid-cols-3 gap-2">
                         <Button
                           onClick={saveCloudSettings}
-                          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                         >
                           保存
                         </Button>
                         <Button
                           onClick={backupToCloud}
-                          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                         >
                           备份
                         </Button>
                         <Button
                           onClick={restoreFromCloud}
-                          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                         >
                           恢复
                         </Button>
@@ -1328,7 +1334,7 @@ export default function BookmarkManager() {
                 </Dialog>
                 <Button
                   variant="outline"
-                  className="bg-purple-800/30 border-purple-600/50 text-white hover:bg-purple-700/50"
+                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                   onClick={() => setIsShareDialogOpen(true)}
                 >
                   <Share2 className="w-4 h-4 mr-2" />
@@ -1336,7 +1342,7 @@ export default function BookmarkManager() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="bg-purple-800/30 border-purple-600/50 text-white hover:bg-purple-700/50"
+                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                   onClick={() => setIsBatchManageDialogOpen(true)}
                 >
                   <CheckSquare className="w-4 h-4 mr-2" />
@@ -1344,7 +1350,7 @@ export default function BookmarkManager() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="bg-purple-800/30 border-purple-600/50 text-white hover:bg-purple-700/50"
+                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                   onClick={() => setIsAISettingsDialogOpen(true)}
                 >
                   <Cpu className="w-4 h-4 mr-2" />
@@ -1359,9 +1365,9 @@ export default function BookmarkManager() {
                     placeholder="搜索标题、描述或标签..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-14 text-lg bg-purple-800/30 border-purple-600/50 text-white placeholder:text-purple-300 pr-12"
+                    className="h-14 text-lg bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/20 transition-all backdrop-blur-sm pr-12"
                   />
-                  <Filter className="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-300 w-5 h-5" />
+                  <Filter className="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary/80 w-5 h-5" />
                 </div>
               </div>
 
@@ -1372,8 +1378,8 @@ export default function BookmarkManager() {
                   variant="outline"
                   size="sm"
                   className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes("全部") || selectedTags.length === 0
-                    ? "bg-purple-600 border-purple-500 text-white"
-                    : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                    ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                    : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                     }`}
                   onClick={() => setSelectedTags(["全部"])}
                 >
@@ -1385,8 +1391,8 @@ export default function BookmarkManager() {
                     variant="outline"
                     size="sm"
                     className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes(tag)
-                      ? "bg-purple-600 border-purple-500 text-white"
-                      : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                      ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                      : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                       }`}
                     onClick={() => toggleTag(tag)}
                   >
@@ -1399,12 +1405,12 @@ export default function BookmarkManager() {
               <div className="text-center mb-12">
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 text-lg rounded-full">
+                    <Button className="bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white px-8 py-3 text-lg rounded-full">
                       <Plus className="w-5 h-5 mr-2" />
                       添加新书签
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-slate-800 border-purple-600 sm:max-w-lg">
+                  <DialogContent className="bg-card border-border sm:max-w-lg">
                     <DialogHeader>
                       <DialogTitle className="text-white flex items-center gap-2">
                         <Plus className="w-5 h-5" />
@@ -1422,7 +1428,7 @@ export default function BookmarkManager() {
                             value={newBookmark.url}
                             onChange={(e) => setNewBookmark((prev) => ({ ...prev, url: e.target.value }))}
                             placeholder="https://example.com"
-                            className="bg-slate-700 border-purple-600 text-white"
+                            className="bg-secondary/40 border-white/10 text-white"
                           />
                           <FetchMetadataButton
                             url={newBookmark.url}
@@ -1441,7 +1447,7 @@ export default function BookmarkManager() {
                           value={newBookmark.title}
                           onChange={(e) => setNewBookmark((prev) => ({ ...prev, title: e.target.value }))}
                           placeholder="输入书签标题"
-                          className="mt-1 bg-slate-700 border-purple-600 text-white"
+                          className="mt-1 bg-secondary/40 border-white/10 text-white"
                         />
                       </div>
                       <div>
@@ -1453,7 +1459,7 @@ export default function BookmarkManager() {
                           value={newBookmark.image}
                           onChange={(e) => setNewBookmark((prev) => ({ ...prev, image: e.target.value }))}
                           placeholder="https://example.com/image.jpg"
-                          className="mt-1 bg-slate-700 border-purple-600 text-white"
+                          className="mt-1 bg-secondary/40 border-white/10 text-white"
                         />
                       </div>
                       <div>
@@ -1466,14 +1472,14 @@ export default function BookmarkManager() {
                             value={newBookmark.tags}
                             onChange={(e) => setNewBookmark((prev) => ({ ...prev, tags: e.target.value }))}
                             placeholder="标签1, 标签2, 标签3"
-                            className="bg-slate-700 border-purple-600 text-white"
+                            className="bg-secondary/40 border-white/10 text-white"
                           />
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={() => openTagSelector(false)}
-                            className="border-purple-600 text-white hover:bg-purple-700/50"
+                            className="border-white/10 text-white hover:bg-purple-700/50"
                           >
                             <Tags className="w-4 h-4" />
                           </Button>
@@ -1488,7 +1494,7 @@ export default function BookmarkManager() {
                           value={newBookmark.description}
                           onChange={(e) => setNewBookmark((prev) => ({ ...prev, description: e.target.value }))}
                           placeholder="书签描述"
-                          className="mt-1 bg-slate-700 border-purple-600 text-white"
+                          className="mt-1 bg-secondary/40 border-white/10 text-white"
                         />
                       </div>
                       <div className="flex gap-2">
@@ -1500,7 +1506,7 @@ export default function BookmarkManager() {
                         </Button>
                         <Button
                           onClick={addBookmark}
-                          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                         >
                           添加书签
                         </Button>
@@ -1515,119 +1521,124 @@ export default function BookmarkManager() {
                 {filteredBookmarks.map((bookmark) => (
                   <Card
                     key={bookmark.id}
-                    className="group bg-slate-800/50 border-purple-600/30 hover:bg-slate-800/70 transition-all duration-300 overflow-hidden backdrop-blur-sm"
+                    className="neon-card-red group relative rounded-[2rem] overflow-hidden p-3 h-full flex flex-col border-0"
                   >
-                    <div className="relative">
+                    {/* Image Container (Full Bleed) */}
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-[#111]">
                       {bookmark.image ? (
-                        <img
-                          src={bookmark.image || "/placeholder.svg"}
-                          alt={bookmark.title}
-                          className="w-full h-48 object-cover"
-                          onError={(e) => {
-                            ; (e.target as HTMLImageElement).style.display = "none"
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-48 bg-gradient-to-br from-purple-800/50 to-slate-800/50 flex items-center justify-center">
+                        <div className="absolute inset-0">
                           <img
-                            src={getFavicon(bookmark.url) || "/placeholder.svg?height=48&width=48"}
+                            src={bookmark.image}
+                            alt={bookmark.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            onError={(e) => {
+                              ; (e.target as HTMLImageElement).style.display = "none"
+                            }}
+                          />
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black">
+                          <img
+                            src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=128`}
                             alt=""
-                            className="w-16 h-16 opacity-50"
+                            className="w-16 h-16 opacity-20 grayscale brightness-200"
                             onError={(e) => {
                               ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
                             }}
                           />
                         </div>
                       )}
-                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                      {/* Top Right Actions (Dropdown) */}
+                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="secondary" className="h-8 w-8 p-0 bg-black/50 hover:bg-black/70">
-                              <span className="sr-only">操作</span>
-                              <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                            <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-black text-white">
+                              <span className="sr-only">Menu</span>
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                               </svg>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-slate-800 border-purple-600">
-                            <DropdownMenuItem
-                              onClick={() => window.open(bookmark.url, "_blank")}
-                              className="text-white hover:bg-purple-700/50"
-                            >
-                              <ExternalLink className="w-4 h-4 mr-2" />
-                              访问
+                          <DropdownMenuContent align="end" className="bg-[#111] border-white/10 text-zinc-300">
+                            <DropdownMenuItem onClick={() => window.open(bookmark.url, "_blank")} className="focus:bg-zinc-800 focus:text-white">
+                              <ExternalLink className="w-4 h-4 mr-2" /> 访问
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => shareToPlaza(bookmark)}
-                              className="text-white hover:bg-purple-700/50"
-                            >
-                              <Share2 className="w-4 h-4 mr-2" />
-                              分享到广场
+                            <DropdownMenuItem onClick={() => shareToPlaza(bookmark)} className="focus:bg-zinc-800 focus:text-white">
+                              <Share2 className="w-4 h-4 mr-2" /> 分享到广场
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setEditingBookmark(bookmark)
-                                setIsEditDialogOpen(true)
-                              }}
-                              className="text-white hover:bg-purple-700/50"
-                            >
-                              <Edit3 className="w-4 h-4 mr-2" />
-                              编辑
+                            <DropdownMenuItem onClick={() => { setEditingBookmark(bookmark); setIsEditDialogOpen(true); }} className="focus:bg-zinc-800 focus:text-white">
+                              <Edit3 className="w-4 h-4 mr-2" /> 编辑
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => deleteBookmark(bookmark.id)}
-                              className="text-red-400 hover:bg-red-700/50"
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              删除
+                            <DropdownMenuItem onClick={() => deleteBookmark(bookmark.id)} className="text-red-400 focus:bg-red-900/30 focus:text-red-300">
+                              <Trash2 className="w-4 h-4 mr-2" /> 删除
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
                     </div>
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-3 mb-3">
-                        <img
-                          src={getFavicon(bookmark.url) || "/placeholder.svg"}
-                          alt=""
-                          className="w-8 h-8 rounded flex-shrink-0 mt-1"
-                          onError={(e) => {
-                            ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
-                          }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{bookmark.title}</h3>
-                          <p className="text-purple-200 text-sm line-clamp-2">{bookmark.description || "暂无描述"}</p>
+
+                    {/* Content Section */}
+                    <div className="flex flex-col flex-1 p-2 pt-4 space-y-3">
+                      {/* Meta / Tags Row */}
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex gap-2 items-center overflow-hidden">
+                          {bookmark.tags.length > 0 ? (
+                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-400 border border-white/5 font-medium truncate max-w-[150px]">
+                              {bookmark.tags[0]}
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-500 border border-white/5 font-medium">未分类</span>
+                          )}
+                          {bookmark.tags.length > 1 && (
+                            <span className="text-zinc-600">+{bookmark.tags.length - 1}</span>
+                          )}
+                        </div>
+                        <div className="text-zinc-600 font-mono text-[10px] uppercase tracking-wider">
+                          {/* Using createdAt as a proxy for date, simplified */}
+                          {new Date(bookmark.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {bookmark.tags.slice(0, 3).map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs bg-purple-800/50 text-purple-200">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {bookmark.tags.length > 3 && (
-                          <Badge variant="secondary" className="text-xs bg-purple-800/50 text-purple-200">
-                            +{bookmark.tags.length - 3}
-                          </Badge>
-                        )}
+
+                      {/* Title */}
+                      <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="block group/title">
+                        <h3 className="text-lg font-bold text-zinc-100 leading-snug group-hover/title:text-white transition-colors line-clamp-2">
+                          {bookmark.title}
+                        </h3>
+                      </a>
+
+                      {/* Description */}
+                      <p className="text-sm text-zinc-500 line-clamp-2 flex-1 leading-relaxed">
+                        {bookmark.description || "暂无描述信息..."}
+                      </p>
+
+                      {/* Footer: Domain & Favicon */}
+                      <div className="pt-2 flex items-center gap-2.5 border-t border-white/5 mt-auto">
+                        <div className="w-6 h-6 rounded-full bg-[#1c1c1c] p-1 flex items-center justify-center border border-white/5">
+                          <img
+                            src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=32`}
+                            alt=""
+                            className="w-full h-full object-contain rounded-full"
+                            onError={(e) => {
+                              ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-zinc-400 hover:text-zinc-300 transition-colors">
+                          {new URL(bookmark.url).hostname.replace('www.', '')}
+                        </span>
                       </div>
-                      <Button
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                        onClick={() => window.open(bookmark.url, "_blank")}
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        访问网站
-                      </Button>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
 
               {filteredBookmarks.length === 0 && (
                 <div className="text-center py-12">
-                  <div className="text-purple-300 text-lg mb-4">暂无书签</div>
-                  <p className="text-purple-400">点击上方"添加新书签"按钮开始收藏您喜欢的网站</p>
+                  <div className="text-primary/80 text-lg mb-4">暂无书签</div>
+                  <p className="text-muted-foreground">点击上方"添加新书签"按钮开始收藏您喜欢的网站</p>
                 </div>
               )}
             </TabsContent>
@@ -1635,7 +1646,7 @@ export default function BookmarkManager() {
             <TabsContent value="plaza" className="space-y-8">
               <div className="text-center py-12">
                 <h2 className="text-4xl font-bold text-white mb-4">书签广场</h2>
-                <p className="text-purple-200 text-lg">发现和收藏他人分享的精彩书签</p>
+                <p className="text-muted-foreground text-lg">发现和收藏他人分享的精彩书签</p>
               </div>
 
               {/* 广场搜索和筛选 */}
@@ -1643,12 +1654,12 @@ export default function BookmarkManager() {
                 {/* 搜索框 */}
                 <div className="max-w-2xl mx-auto">
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-300 w-5 h-5" />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary/80 w-5 h-5" />
                     <Input
                       placeholder="搜索标题、描述、标签或分享者..."
                       value={plazaSearchQuery}
                       onChange={(e) => setPlazaSearchQuery(e.target.value)}
-                      className="h-12 text-lg bg-purple-800/30 border-purple-600/50 text-white placeholder:text-purple-300 pl-12"
+                      className="h-12 text-lg bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white placeholder:text-primary/80 pl-12"
                     />
                   </div>
                 </div>
@@ -1658,8 +1669,8 @@ export default function BookmarkManager() {
                   <Button
                     variant="outline"
                     className={`${showMySharesOnly
-                      ? "bg-purple-600 border-purple-500 text-white"
-                      : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                      ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                      : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                       }`}
                     onClick={() => {
                       setShowMySharesOnly(!showMySharesOnly)
@@ -1676,14 +1687,14 @@ export default function BookmarkManager() {
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
-                        className="bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                        className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                         onClick={fetchMyShares}
                       >
                         <Settings className="w-4 h-4 mr-2" />
                         管理分享
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-slate-800 border-purple-600 sm:max-w-2xl">
+                    <DialogContent className="bg-card border-border sm:max-w-2xl">
                       <DialogHeader>
                         <DialogTitle className="text-white flex items-center gap-2">
                           <Settings className="w-5 h-5" />
@@ -1703,13 +1714,13 @@ export default function BookmarkManager() {
                                 value={deleteSecret}
                                 onChange={(e) => setDeleteSecret(e.target.value)}
                                 placeholder="输入您的分享密钥"
-                                className="mt-1 bg-slate-700 border-purple-600 text-white pr-10"
+                                className="mt-1 bg-secondary/40 border-white/10 text-white pr-10"
                               />
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="absolute right-0 top-1 h-8 w-8 p-0 text-purple-300 hover:text-white"
+                                className="absolute right-0 top-1 h-8 w-8 p-0 text-primary/80 hover:text-white"
                                 onClick={() => setShowDeleteSecret(!showDeleteSecret)}
                               >
                                 {showDeleteSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -1719,7 +1730,7 @@ export default function BookmarkManager() {
                           <div className="flex gap-2 pt-6">
                             <Button
                               onClick={toggleSelectAll}
-                              className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                              className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                             >
                               {selectedShares.length === filteredPlazaBookmarks.length ? "取消全选" : "全选"}
                             </Button>
@@ -1740,12 +1751,12 @@ export default function BookmarkManager() {
                           {mySharedBookmarks.map((bookmark) => (
                             <div
                               key={bookmark.shareId}
-                              className="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg"
+                              className="flex items-center gap-3 p-3 bg-secondary/40 rounded-lg"
                             >
                               <Checkbox
                                 checked={selectedShares.includes(bookmark.shareId)}
                                 onCheckedChange={() => toggleShareSelection(bookmark.shareId)}
-                                className="border-purple-400"
+                                className="border-white/10"
                               />
                               <img
                                 src={getFavicon(bookmark.url) || "/placeholder.svg"}
@@ -1757,7 +1768,7 @@ export default function BookmarkManager() {
                               />
                               <div className="flex-1 min-w-0">
                                 <h4 className="text-white font-medium truncate">{bookmark.title.length > 40 ? `${bookmark.title.substring(0, 35)}...` : bookmark.title}</h4>
-                                <p className="text-purple-300 text-sm truncate">{bookmark.url.length > 60 ? `${bookmark.url.substring(0, 60)}...` : bookmark.url}</p>
+                                <p className="text-primary/80 text-sm truncate">{bookmark.url.length > 60 ? `${bookmark.url.substring(0, 60)}...` : bookmark.url}</p>
                               </div>
                               <Button
                                 onClick={() => deleteShare(bookmark.shareId)}
@@ -1778,7 +1789,7 @@ export default function BookmarkManager() {
                 {/* 标签筛选 */}
                 {plazaTags.length > 0 && (
                   <div className="flex flex-wrap justify-center gap-2">
-                    <span className="text-sm text-purple-300 flex items-center gap-2 mr-2">
+                    <span className="text-sm text-primary/80 flex items-center gap-2 mr-2">
                       <Filter className="w-4 h-4" />
                       标签筛选:
                     </span>
@@ -1787,8 +1798,8 @@ export default function BookmarkManager() {
                       variant="outline"
                       size="sm"
                       className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes("全部") || plazaSelectedTags.length === 0
-                        ? "bg-purple-600 border-purple-500 text-white"
-                        : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                        ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                        : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                         }`}
                       onClick={() => setPlazaSelectedTags(["全部"])}
                     >
@@ -1800,8 +1811,8 @@ export default function BookmarkManager() {
                         variant="outline"
                         size="sm"
                         className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes(tag)
-                          ? "bg-purple-600 border-purple-500 text-white"
-                          : "bg-purple-800/30 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                          ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                          : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                           }`}
                         onClick={() => togglePlazaTag(tag)}
                       >
@@ -1817,81 +1828,98 @@ export default function BookmarkManager() {
                 {filteredPlazaBookmarks.map((bookmark) => (
                   <Card
                     key={bookmark.shareId}
-                    className="group bg-slate-800/50 border-purple-600/30 hover:bg-slate-800/70 transition-all duration-300 overflow-hidden backdrop-blur-sm"
+                    className="neon-card-red group relative rounded-[2rem] overflow-hidden p-3 h-full flex flex-col border-0"
                   >
-                    <div className="relative">
+                    {/* Image Container (Full Bleed) */}
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-[#111]">
                       {bookmark.image ? (
-                        <img
-                          src={bookmark.image || "/placeholder.svg"}
-                          alt={bookmark.title}
-                          className="w-full h-48 object-cover"
-                          onError={(e) => {
-                            ; (e.target as HTMLImageElement).style.display = "none"
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-48 bg-gradient-to-br from-purple-800/50 to-slate-800/50 flex items-center justify-center">
+                        <div className="absolute inset-0">
                           <img
-                            src={getFavicon(bookmark.url) || "/placeholder.svg?height=48&width=48"}
+                            src={bookmark.image}
+                            alt={bookmark.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            onError={(e) => {
+                              ; (e.target as HTMLImageElement).style.display = "none"
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black">
+                          <img
+                            src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=128`}
                             alt=""
-                            className="w-16 h-16 opacity-50"
+                            className="w-16 h-16 opacity-20 grayscale brightness-200"
                             onError={(e) => {
                               ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
                             }}
                           />
                         </div>
                       )}
+
+                      {/* Selection Checkbox (for Batch Actions) */}
+                      {showMySharesOnly && (
+                        <div className="absolute top-3 left-3 z-20">
+                          <Checkbox
+                            checked={selectedShares.includes(bookmark.shareId)}
+                            onCheckedChange={() => toggleShareSelection(bookmark.shareId)}
+                            className="w-5 h-5 border-2 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                          />
+                        </div>
+                      )}
                     </div>
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-3 mb-3">
-                        <img
-                          src={getFavicon(bookmark.url) || "/placeholder.svg"}
-                          alt=""
-                          className="w-8 h-8 rounded flex-shrink-0 mt-1"
-                          onError={(e) => {
-                            ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
-                          }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{bookmark.title}</h3>
-                          <p className="text-purple-200 text-sm line-clamp-2">{bookmark.description || "暂无描述"}</p>
+
+                    {/* Content Section */}
+                    <div className="flex flex-col flex-1 p-2 pt-4 space-y-3">
+                      {/* Meta / Tags Row */}
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex gap-2 items-center overflow-hidden">
+                          {bookmark.tags.length > 0 ? (
+                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-400 border border-white/5 font-medium truncate max-w-[150px]">
+                              {bookmark.tags[0]}
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-500 border border-white/5 font-medium">未分类</span>
+                          )}
+                          {bookmark.tags.length > 1 && (
+                            <span className="text-zinc-600">+{bookmark.tags.length - 1}</span>
+                          )}
+                        </div>
+                        <div className="text-zinc-600 font-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 inline-block"></span>
+                          {/* Using likes as a proxy for "views" or "popularity" since we have that data */}
+                          {bookmark.likes || 0} LIKES
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-purple-300 mb-3">
-                        <span>分享者: {bookmark.sharedBy}</span>
-                        <span>•</span>
-                        <div className="flex items-center gap-1">
-                          <Heart className="w-3 h-3" />
-                          {bookmark.likes}
+
+                      {/* Title */}
+                      <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="block group/title">
+                        <h3 className="text-lg font-bold text-zinc-100 leading-snug group-hover/title:text-white transition-colors line-clamp-2">
+                          {bookmark.title}
+                        </h3>
+                      </a>
+
+                      {/* Description */}
+                      <p className="text-sm text-zinc-500 line-clamp-2 flex-1 leading-relaxed">
+                        {bookmark.description || "暂无描述信息..."}
+                      </p>
+
+                      {/* Footer: Sharer & Action */}
+                      <div className="pt-2 flex items-center justify-between border-t border-white/5 mt-auto">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
+                            {bookmark.sharedBy.substring(0, 2).toUpperCase()}
+                          </div>
+                          <span className="text-xs font-medium text-zinc-400">
+                            {bookmark.sharedBy}
+                          </span>
                         </div>
-                        <span>•</span>
-                        <span>{new Date(bookmark.sharedAt).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {bookmark.tags.slice(0, 3).map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs bg-purple-800/50 text-purple-200">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {bookmark.tags.length > 3 && (
-                          <Badge variant="secondary" className="text-xs bg-purple-800/50 text-purple-200">
-                            +{bookmark.tags.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
+
                         <Button
-                          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600"
-                          onClick={() => window.open(bookmark.url, "_blank")}
-                        >
-                          <ExternalLink className="w-4 h-4 mr-2" />
-                          访问
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="border-purple-600 text-white hover:bg-purple-700/50"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-3 text-xs rounded-full bg-[#1c1c1c] text-zinc-400 hover:text-white hover:bg-[#2a2a2a] border border-white/5"
                           onClick={() => {
-                            // 收藏到我的书签
                             const newBookmark: Bookmark = {
                               id: Date.now().toString(),
                               title: bookmark.title,
@@ -1905,25 +1933,25 @@ export default function BookmarkManager() {
                             const updatedBookmarks = [...bookmarks, newBookmark]
                             saveToStorage(updatedBookmarks)
                             toast({
-                              title: "成功",
-                              description: "书签已收藏到我的书签",
+                              title: "收藏成功",
+                              description: "已添加到您的书签列表",
                             })
                           }}
                         >
-                          <Star className="w-4 h-4" />
+                          <Heart className="w-3 h-3 mr-1.5" /> 收藏
                         </Button>
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
 
               {filteredPlazaBookmarks.length === 0 && (
                 <div className="text-center py-12">
-                  <div className="text-purple-300 text-lg mb-4">
+                  <div className="text-primary/80 text-lg mb-4">
                     {showMySharesOnly ? "您还没有分享任何书签" : "暂无分享的书签"}
                   </div>
-                  <p className="text-purple-400">
+                  <p className="text-muted-foreground">
                     {showMySharesOnly ? "去我的书签页面分享一些精彩内容吧！" : "成为第一个分享书签的用户吧！"}
                   </p>
                 </div>
@@ -1933,7 +1961,7 @@ export default function BookmarkManager() {
 
           {/* 标签选择器对话框 */}
           <Dialog open={isTagSelectorOpen} onOpenChange={setIsTagSelectorOpen}>
-            <DialogContent className="bg-slate-800 border-purple-600 sm:max-w-2xl">
+            <DialogContent className="bg-card border-border sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center gap-2">
                   <Tags className="w-5 h-5" />
@@ -1944,9 +1972,9 @@ export default function BookmarkManager() {
                 {/* 当前选中的标签 */}
                 <div>
                   <Label className="text-white text-sm">已选择的标签</Label>
-                  <div className="flex flex-wrap gap-2 mt-2 p-3 bg-slate-700/50 rounded-lg min-h-[60px]">
+                  <div className="flex flex-wrap gap-2 mt-2 p-3 bg-secondary/40 rounded-lg min-h-[60px]">
                     {currentEditingTags.length === 0 ? (
-                      <span className="text-purple-300 text-sm">暂无选择的标签</span>
+                      <span className="text-primary/80 text-sm">暂无选择的标签</span>
                     ) : (
                       currentEditingTags.map((tag) => (
                         <Badge
@@ -1978,7 +2006,7 @@ export default function BookmarkManager() {
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       placeholder="输入新标签名称"
-                      className="bg-slate-700 border-purple-600 text-white"
+                      className="bg-secondary/40 border-white/10 text-white"
                       onKeyPress={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault()
@@ -2011,8 +2039,8 @@ export default function BookmarkManager() {
                           variant="outline"
                           size="sm"
                           className={`justify-start text-left ${currentEditingTags.includes(tag)
-                            ? "bg-purple-600 border-purple-500 text-white"
-                            : "bg-slate-700 border-purple-600/50 text-purple-200 hover:bg-purple-700/50"
+                            ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                            : "bg-secondary/40 border-white/10 text-muted-foreground hover:bg-purple-700/50"
                             }`}
                           onClick={() => toggleTagInSelector(tag)}
                         >
@@ -2035,7 +2063,7 @@ export default function BookmarkManager() {
                   <Button
                     type="button"
                     onClick={confirmTagSelection}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                    className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                   >
                     确认选择
                   </Button>
@@ -2046,7 +2074,7 @@ export default function BookmarkManager() {
 
           {/* 分享设置对话框 */}
           <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-            <DialogContent className="bg-slate-800 border-purple-600 sm:max-w-lg">
+            <DialogContent className="bg-card border-border sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center gap-2">
                   <Share2 className="w-5 h-5" />
@@ -2054,7 +2082,7 @@ export default function BookmarkManager() {
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div className="text-sm text-purple-200 bg-purple-900/30 p-3 rounded-lg">
+                <div className="text-sm text-muted-foreground bg-purple-900/30 p-3 rounded-lg">
                   <p>🔐 分享密钥用于管理您的分享内容</p>
                   <p>请设置并妥善保管您的分享密钥，它将用于：</p>
                   <ul className="list-disc pl-5 mt-1 space-y-1">
@@ -2072,7 +2100,7 @@ export default function BookmarkManager() {
                     value={shareSettings.shareSecret}
                     onChange={(e) => setShareSettings((prev) => ({ ...prev, shareSecret: e.target.value }))}
                     placeholder="设置一个唯一的分享密钥"
-                    className="mt-1 bg-slate-700 border-purple-600 text-white"
+                    className="mt-1 bg-secondary/40 border-white/10 text-white"
                   />
                 </div>
                 <div>
@@ -2084,12 +2112,12 @@ export default function BookmarkManager() {
                     value={shareSettings.displayName}
                     onChange={(e) => setShareSettings((prev) => ({ ...prev, displayName: e.target.value }))}
                     placeholder="您的显示名称（可选）"
-                    className="mt-1 bg-slate-700 border-purple-600 text-white"
+                    className="mt-1 bg-secondary/40 border-white/10 text-white"
                   />
                 </div>
                 <Button
                   onClick={saveShareSettings}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                  className="w-full bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                 >
                   保存设置
                 </Button>
@@ -2099,7 +2127,7 @@ export default function BookmarkManager() {
 
           {/* 编辑对话框 */}
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="bg-slate-800 border-purple-600 sm:max-w-lg">
+            <DialogContent className="bg-card border-border sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center gap-2">
                   <Edit3 className="w-5 h-5" />
@@ -2117,7 +2145,7 @@ export default function BookmarkManager() {
                         id="editUrl"
                         value={editingBookmark.url}
                         onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, url: e.target.value } : null))}
-                        className="bg-slate-700 border-purple-600 text-white"
+                        className="bg-secondary/40 border-white/10 text-white"
                       />
                       <FetchMetadataButton
                         url={editingBookmark.url}
@@ -2135,7 +2163,7 @@ export default function BookmarkManager() {
                       id="editTitle"
                       value={editingBookmark.title}
                       onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, title: e.target.value } : null))}
-                      className="mt-1 bg-slate-700 border-purple-600 text-white"
+                      className="mt-1 bg-secondary/40 border-white/10 text-white"
                     />
                   </div>
                   <div>
@@ -2146,7 +2174,7 @@ export default function BookmarkManager() {
                       id="editImage"
                       value={editingBookmark.image || ""}
                       onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, image: e.target.value } : null))}
-                      className="mt-1 bg-slate-700 border-purple-600 text-white"
+                      className="mt-1 bg-secondary/40 border-white/10 text-white"
                     />
                   </div>
                   <div>
@@ -2170,14 +2198,14 @@ export default function BookmarkManager() {
                               : null,
                           )
                         }
-                        className="bg-slate-700 border-purple-600 text-white"
+                        className="bg-secondary/40 border-white/10 text-white"
                       />
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => openTagSelector(true)}
-                        className="border-purple-600 text-white hover:bg-purple-700/50"
+                        className="border-white/10 text-white hover:bg-purple-700/50"
                       >
                         <Tags className="w-4 h-4" />
                       </Button>
@@ -2193,7 +2221,7 @@ export default function BookmarkManager() {
                       onChange={(e) =>
                         setEditingBookmark((prev) => (prev ? { ...prev, description: e.target.value } : null))
                       }
-                      className="mt-1 bg-slate-700 border-purple-600 text-white"
+                      className="mt-1 bg-secondary/40 border-white/10 text-white"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -2205,7 +2233,7 @@ export default function BookmarkManager() {
                     </Button>
                     <Button
                       onClick={updateBookmark}
-                      className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                      className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                     >
                       更新书签
                     </Button>
