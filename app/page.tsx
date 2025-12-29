@@ -42,6 +42,7 @@ import { useToast } from "@/hooks/use-toast"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import AISettingsDialog from "./components/ai-settings-dialog"
 import FetchMetadataButton from "./components/fetch-metadata-button"
 import BatchManageDialog from "./components/batch-manage-dialog"
@@ -1170,1100 +1171,1116 @@ export default function BookmarkManager() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden selection:bg-primary/30">
-      <SnowEffect />
-      {/* Ambient Background Glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none z-0" />
-      <div className="fixed bottom-0 right-0 w-[800px] h-[600px] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none z-0" />
+    <TooltipProvider>
+      <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden selection:bg-primary/30">
+        <SnowEffect />
+        {/* Ambient Background Glow */}
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none z-0" />
+        <div className="fixed bottom-0 right-0 w-[800px] h-[600px] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none z-0" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* 顶部导航栏 */}
-        <div className="flex items-center justify-between p-6">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain hover:rotate-12 transition-transform duration-300" />
-            <h1 className="text-2xl font-bold text-white">JieMa66</h1>
-            <script defer src="https://umami-jiema66.env.pm/script.js" data-website-id="188469dd-eaf0-4e5d-9cd9-d93cd78fbf79"></script>
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* 顶部导航栏 */}
+          <div className="flex items-center justify-between p-6">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="Logo" className="w-20 h-20 object-contain hover:rotate-12 transition-transform duration-300" />
+              <h1 className="text-2xl font-bold text-white">JieMa66</h1>
+              <script defer src="https://umami-jiema66.env.pm/script.js" data-website-id="188469dd-eaf0-4e5d-9cd9-d93cd78fbf79"></script>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
+                onClick={() => setActiveTab("my-bookmarks")}
+              >
+                <Home className="w-4 h-4 mr-2" />
+                我的主页
+              </Button>
+              <Button
+                variant="outline"
+                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
+                onClick={() => {
+                  setActiveTab("plaza")
+                  fetchPlazaBookmarks()
+                }}
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                书签广场
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
-              onClick={() => setActiveTab("my-bookmarks")}
-            >
-              <Home className="w-4 h-4 mr-2" />
-              我的主页
-            </Button>
-            <Button
-              variant="outline"
-              className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
-              onClick={() => {
-                setActiveTab("plaza")
-                fetchPlazaBookmarks()
-              }}
-            >
-              <Globe className="w-4 h-4 mr-2" />
-              书签广场
-            </Button>
-          </div>
-        </div>
 
-        {/* 主要内容区域 */}
-        <div className="px-6 pb-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsContent value="my-bookmarks" className="space-y-8">
-              {/* 标语 */}
-              <div className="text-center py-12">
-                <h2 className="text-7xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 mb-8 tracking-tight glow-text leading-tight py-2">
-                  赛博智库 · 链接无限
-                </h2>
-              </div>
+          {/* 主要内容区域 */}
+          <div className="px-6 pb-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+              <TabsContent value="my-bookmarks" className="space-y-8">
+                {/* 标语 */}
+                <div className="text-center py-12">
+                  <h2 className="text-7xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 mb-8 tracking-tight glow-text leading-tight py-2">
+                    赛博智库 · 链接无限
+                  </h2>
+                </div>
 
-              {/* 功能按钮组 */}
-              <div className="flex flex-wrap justify-center gap-4 mb-8">
-                <>
-                  <Button
-                    onClick={() => document.getElementById("import-file-input")?.click()}
-                    variant="outline"
-                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    导入书签
-                  </Button>
-                  <input
-                    id="import-file-input"
-                    type="file"
-                    accept=".json,.txt"
-                    onChange={importData}
-                    className="hidden"
-                  />
-                </>
-                <>
-                  <Button
-                    onClick={() => document.getElementById("import-browser-bookmarks-input")?.click()}
-                    variant="outline"
-                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    导入浏览器收藏夹
-                  </Button>
-                  <input
-                    id="import-browser-bookmarks-input"
-                    type="file"
-                    accept=".html,.htm"
-                    onChange={importBrowserBookmarks}
-                    className="hidden"
-                  />
-                </>
-                <Button
-                  onClick={exportData}
-                  variant="outline"
-                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  导出JSON
-                </Button>
-                <Dialog open={isCloudDialogOpen} onOpenChange={setIsCloudDialogOpen}>
-                  <DialogTrigger asChild>
+                {/* 功能按钮组 */}
+                <div className="flex flex-wrap justify-center gap-4 mb-8">
+                  <>
                     <Button
+                      onClick={() => document.getElementById("import-file-input")?.click()}
                       variant="outline"
                       className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                     >
-                      <Cloud className="w-4 h-4 mr-2" />
-                      云端备份
+                      <Upload className="w-4 h-4 mr-2" />
+                      导入书签
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-card border-border">
-                    <DialogHeader>
-                      <DialogTitle className="text-white flex items-center gap-2">
-                        <Cloud className="w-5 h-5" />
-                        云端设置
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="text-sm text-muted-foreground bg-purple-900/30 p-3 rounded-lg">
-                        <p>💡 提示：不同的密钥和密码组合会创建独立的备份文件</p>
-                        <p>您可以使用多组凭据管理不同的书签集合</p>
-                      </div>
-                      <div>
-                        <Label htmlFor="cloudKey" className="text-white">
-                          密钥
-                        </Label>
-                        <Input
-                          id="cloudKey"
-                          value={cloudSettings.key}
-                          onChange={(e) => setCloudSettings((prev) => ({ ...prev, key: e.target.value }))}
-                          placeholder="输入您的密钥"
-                          className="mt-1 bg-secondary/40 border-white/10 text-white"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="cloudSecret" className="text-white">
-                          密码
-                        </Label>
-                        <Input
-                          id="cloudSecret"
-                          type="password"
-                          value={cloudSettings.secret}
-                          onChange={(e) => setCloudSettings((prev) => ({ ...prev, secret: e.target.value }))}
-                          placeholder="输入您的密码"
-                          className="mt-1 bg-secondary/40 border-white/10 text-white"
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <Button
-                          onClick={saveCloudSettings}
-                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
-                        >
-                          保存
-                        </Button>
-                        <Button
-                          onClick={backupToCloud}
-                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
-                        >
-                          备份
-                        </Button>
-                        <Button
-                          onClick={restoreFromCloud}
-                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
-                        >
-                          恢复
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <Button
-                  variant="outline"
-                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
-                  onClick={() => setIsShareDialogOpen(true)}
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  分享设置
-                </Button>
-                <Button
-                  variant="outline"
-                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
-                  onClick={() => setIsBatchManageDialogOpen(true)}
-                >
-                  <CheckSquare className="w-4 h-4 mr-2" />
-                  批量管理
-                </Button>
-                <Button
-                  variant="outline"
-                  className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
-                  onClick={() => setIsAISettingsDialogOpen(true)}
-                >
-                  <Cpu className="w-4 h-4 mr-2" />
-                  AI 设置
-                </Button>
-              </div>
-
-              {/* 搜索框 */}
-              <div className="max-w-2xl mx-auto mb-8">
-                <div className="relative">
-                  <Input
-                    placeholder="搜索标题、描述或标签..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-14 text-lg bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/20 transition-all backdrop-blur-sm pr-12"
-                  />
-                  <Filter className="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary/80 w-5 h-5" />
-                </div>
-              </div>
-
-              {/* 标签云 */}
-              <div className="flex flex-wrap justify-center gap-3 mb-8">
-                <Button
-                  key="all"
-                  variant="outline"
-                  size="sm"
-                  className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes("全部") || selectedTags.length === 0
-                    ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
-                    : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
-                    }`}
-                  onClick={() => setSelectedTags(["全部"])}
-                >
-                  全部
-                </Button>
-                {allTags.map((tag) => (
-                  <Button
-                    key={tag}
-                    variant="outline"
-                    size="sm"
-                    className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes(tag)
-                      ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
-                      : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
-                      }`}
-                    onClick={() => toggleTag(tag)}
-                  >
-                    {tag}
-                  </Button>
-                ))}
-              </div>
-
-              {/* 添加新书签按钮 */}
-              <div className="text-center mb-12">
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white px-8 py-3 text-lg rounded-full">
-                      <Plus className="w-5 h-5 mr-2" />
-                      添加新书签
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-card border-border sm:max-w-lg">
-                    <DialogHeader>
-                      <DialogTitle className="text-white flex items-center gap-2">
-                        <Plus className="w-5 h-5" />
-                        添加新书签
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="url" className="text-white">
-                          链接 *
-                        </Label>
-                        <div className="flex gap-2 mt-1">
-                          <Input
-                            id="url"
-                            value={newBookmark.url}
-                            onChange={(e) => setNewBookmark((prev) => ({ ...prev, url: e.target.value }))}
-                            placeholder="https://example.com"
-                            className="bg-secondary/40 border-white/10 text-white"
-                          />
-                          <FetchMetadataButton
-                            url={newBookmark.url}
-                            onFetchComplete={handleMetadataFetch}
-                            aiSettings={aiSettings}
-                            isDisabled={!newBookmark.url.trim()}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="title" className="text-white">
-                          标题 *
-                        </Label>
-                        <Input
-                          id="title"
-                          value={newBookmark.title}
-                          onChange={(e) => setNewBookmark((prev) => ({ ...prev, title: e.target.value }))}
-                          placeholder="输入书签标题"
-                          className="mt-1 bg-secondary/40 border-white/10 text-white"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="image" className="text-white">
-                          图片链接
-                        </Label>
-                        <Input
-                          id="image"
-                          value={newBookmark.image}
-                          onChange={(e) => setNewBookmark((prev) => ({ ...prev, image: e.target.value }))}
-                          placeholder="https://example.com/image.jpg"
-                          className="mt-1 bg-secondary/40 border-white/10 text-white"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="tags" className="text-white">
-                          标签
-                        </Label>
-                        <div className="flex gap-2 mt-1">
-                          <Input
-                            id="tags"
-                            value={newBookmark.tags}
-                            onChange={(e) => setNewBookmark((prev) => ({ ...prev, tags: e.target.value }))}
-                            placeholder="标签1, 标签2, 标签3"
-                            className="bg-secondary/40 border-white/10 text-white"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openTagSelector(false)}
-                            className="border-white/10 text-white hover:bg-purple-700/50"
-                          >
-                            <Tags className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="description" className="text-white">
-                          描述
-                        </Label>
-                        <Textarea
-                          id="description"
-                          value={newBookmark.description}
-                          onChange={(e) => setNewBookmark((prev) => ({ ...prev, description: e.target.value }))}
-                          placeholder="书签描述"
-                          className="mt-1 bg-secondary/40 border-white/10 text-white"
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => setIsAddDialogOpen(false)}
-                          className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white"
-                        >
-                          取消
-                        </Button>
-                        <Button
-                          onClick={addBookmark}
-                          className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
-                        >
-                          添加书签
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              {/* 书签展示 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredBookmarks.map((bookmark) => (
-                  <Card
-                    key={bookmark.id}
-                    className="neon-card-red group relative rounded-[2rem] overflow-hidden p-3 h-full flex flex-col border-0"
-                  >
-                    {/* Image Container (Full Bleed) */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-[#111]">
-                      {bookmark.image ? (
-                        <div className="absolute inset-0">
-                          <img
-                            src={bookmark.image}
-                            alt={bookmark.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            onError={(e) => {
-                              ; (e.target as HTMLImageElement).style.display = "none"
-                            }}
-                          />
-                          {/* Hover Overlay */}
-                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black">
-                          <img
-                            src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=128`}
-                            alt=""
-                            className="w-16 h-16 opacity-20 grayscale brightness-200"
-                            onError={(e) => {
-                              ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      {/* Top Right Actions (Dropdown) */}
-                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-black text-white">
-                              <span className="sr-only">Menu</span>
-                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                              </svg>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-[#111] border-white/10 text-zinc-300">
-                            <DropdownMenuItem onClick={() => window.open(bookmark.url, "_blank")} className="focus:bg-zinc-800 focus:text-white">
-                              <ExternalLink className="w-4 h-4 mr-2" /> 访问
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => shareToPlaza(bookmark)} className="focus:bg-zinc-800 focus:text-white">
-                              <Share2 className="w-4 h-4 mr-2" /> 分享到广场
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => { setEditingBookmark(bookmark); setIsEditDialogOpen(true); }} className="focus:bg-zinc-800 focus:text-white">
-                              <Edit3 className="w-4 h-4 mr-2" /> 编辑
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => deleteBookmark(bookmark.id)} className="text-red-400 focus:bg-red-900/30 focus:text-red-300">
-                              <Trash2 className="w-4 h-4 mr-2" /> 删除
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-
-                    {/* Content Section */}
-                    <div className="flex flex-col flex-1 p-2 pt-4 space-y-3">
-                      {/* Meta / Tags Row */}
-                      <div className="flex items-center justify-between text-xs">
-                        <div className="flex gap-2 items-center overflow-hidden">
-                          {bookmark.tags.length > 0 ? (
-                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-400 border border-white/5 font-medium truncate max-w-[150px]">
-                              {bookmark.tags[0]}
-                            </span>
-                          ) : (
-                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-500 border border-white/5 font-medium">未分类</span>
-                          )}
-                          {bookmark.tags.length > 1 && (
-                            <span className="text-zinc-600">+{bookmark.tags.length - 1}</span>
-                          )}
-                        </div>
-                        <div className="text-zinc-600 font-mono text-[10px] uppercase tracking-wider">
-                          {/* Using createdAt as a proxy for date, simplified */}
-                          {new Date(bookmark.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </div>
-                      </div>
-
-                      {/* Title */}
-                      <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="block group/title">
-                        <h3 className="text-lg font-bold text-zinc-100 leading-snug group-hover/title:text-white transition-colors line-clamp-2">
-                          {bookmark.title}
-                        </h3>
-                      </a>
-
-                      {/* Description */}
-                      <p className="text-sm text-zinc-500 line-clamp-2 flex-1 leading-relaxed">
-                        {bookmark.description || "暂无描述信息..."}
-                      </p>
-
-                      {/* Footer: Domain & Favicon */}
-                      <div className="pt-2 flex items-center gap-2.5 border-t border-white/5 mt-auto">
-                        <div className="w-6 h-6 rounded-full bg-[#1c1c1c] p-1 flex items-center justify-center border border-white/5">
-                          <img
-                            src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=32`}
-                            alt=""
-                            className="w-full h-full object-contain rounded-full"
-                            onError={(e) => {
-                              ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
-                            }}
-                          />
-                        </div>
-                        <span className="text-xs font-medium text-zinc-400 hover:text-zinc-300 transition-colors">
-                          {new URL(bookmark.url).hostname.replace('www.', '')}
-                        </span>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-
-              {filteredBookmarks.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="text-primary/80 text-lg mb-4">暂无书签</div>
-                  <p className="text-muted-foreground">点击上方"添加新书签"按钮开始收藏您喜欢的网站</p>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="plaza" className="space-y-8">
-              <div className="text-center py-12">
-                <h2 className="text-4xl font-bold text-white mb-4">书签广场</h2>
-                <p className="text-muted-foreground text-lg">发现和收藏他人分享的精彩书签</p>
-              </div>
-
-              {/* 广场搜索和筛选 */}
-              <div className="space-y-6">
-                {/* 搜索框 */}
-                <div className="max-w-2xl mx-auto">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary/80 w-5 h-5" />
-                    <Input
-                      placeholder="搜索标题、描述、标签或分享者..."
-                      value={plazaSearchQuery}
-                      onChange={(e) => setPlazaSearchQuery(e.target.value)}
-                      className="h-12 text-lg bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white placeholder:text-primary/80 pl-12"
+                    <input
+                      id="import-file-input"
+                      type="file"
+                      accept=".json,.txt"
+                      onChange={importData}
+                      className="hidden"
                     />
-                  </div>
-                </div>
-
-                {/* 控制按钮 */}
-                <div className="flex flex-wrap justify-center gap-4">
+                  </>
+                  <>
+                    <Button
+                      onClick={() => document.getElementById("import-browser-bookmarks-input")?.click()}
+                      variant="outline"
+                      className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      导入浏览器收藏夹
+                    </Button>
+                    <input
+                      id="import-browser-bookmarks-input"
+                      type="file"
+                      accept=".html,.htm"
+                      onChange={importBrowserBookmarks}
+                      className="hidden"
+                    />
+                  </>
                   <Button
+                    onClick={exportData}
                     variant="outline"
-                    className={`${showMySharesOnly
-                      ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
-                      : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
-                      }`}
-                    onClick={() => {
-                      setShowMySharesOnly(!showMySharesOnly)
-                      if (!showMySharesOnly) {
-                        fetchMyShares()
-                      }
-                    }}
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    {showMySharesOnly ? "显示全部" : "我的分享"}
+                    <Download className="w-4 h-4 mr-2" />
+                    导出JSON
                   </Button>
-
-                  <Dialog open={isManageSharesDialogOpen} onOpenChange={setIsManageSharesDialogOpen}>
+                  <Dialog open={isCloudDialogOpen} onOpenChange={setIsCloudDialogOpen}>
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
-                        className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
-                        onClick={fetchMyShares}
+                        className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
                       >
-                        <Settings className="w-4 h-4 mr-2" />
-                        管理分享
+                        <Cloud className="w-4 h-4 mr-2" />
+                        云端备份
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-card border-border sm:max-w-2xl">
+                    <DialogContent className="bg-card border-border">
                       <DialogHeader>
                         <DialogTitle className="text-white flex items-center gap-2">
-                          <Settings className="w-5 h-5" />
-                          管理我的分享
+                          <Cloud className="w-5 h-5" />
+                          云端设置
                         </DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <div className="flex-1">
-                            <Label htmlFor="deleteSecret" className="text-white">
-                              删除密钥
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="deleteSecret"
-                                type={showDeleteSecret ? "text" : "password"}
-                                value={deleteSecret}
-                                onChange={(e) => setDeleteSecret(e.target.value)}
-                                placeholder="输入您的分享密钥"
-                                className="mt-1 bg-secondary/40 border-white/10 text-white pr-10"
-                              />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="absolute right-0 top-1 h-8 w-8 p-0 text-primary/80 hover:text-white"
-                                onClick={() => setShowDeleteSecret(!showDeleteSecret)}
-                              >
-                                {showDeleteSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                              </Button>
-                            </div>
+                        <div className="text-sm text-muted-foreground bg-purple-900/30 p-3 rounded-lg">
+                          <p>💡 提示：不同的密钥和密码组合会创建独立的备份文件</p>
+                          <p>您可以使用多组凭据管理不同的书签集合</p>
+                        </div>
+                        <div>
+                          <Label htmlFor="cloudKey" className="text-white">
+                            密钥
+                          </Label>
+                          <Input
+                            id="cloudKey"
+                            value={cloudSettings.key}
+                            onChange={(e) => setCloudSettings((prev) => ({ ...prev, key: e.target.value }))}
+                            placeholder="输入您的密钥"
+                            className="mt-1 bg-secondary/40 border-white/10 text-white"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="cloudSecret" className="text-white">
+                            密码
+                          </Label>
+                          <Input
+                            id="cloudSecret"
+                            type="password"
+                            value={cloudSettings.secret}
+                            onChange={(e) => setCloudSettings((prev) => ({ ...prev, secret: e.target.value }))}
+                            placeholder="输入您的密码"
+                            className="mt-1 bg-secondary/40 border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button
+                            onClick={saveCloudSettings}
+                            className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
+                          >
+                            保存
+                          </Button>
+                          <Button
+                            onClick={backupToCloud}
+                            className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
+                          >
+                            备份
+                          </Button>
+                          <Button
+                            onClick={restoreFromCloud}
+                            className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
+                          >
+                            恢复
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button
+                    variant="outline"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    onClick={() => setIsShareDialogOpen(true)}
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    分享设置
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    onClick={() => setIsBatchManageDialogOpen(true)}
+                  >
+                    <CheckSquare className="w-4 h-4 mr-2" />
+                    批量管理
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    onClick={() => setIsAISettingsDialogOpen(true)}
+                  >
+                    <Cpu className="w-4 h-4 mr-2" />
+                    AI 设置
+                  </Button>
+                </div>
+
+                {/* 搜索框 */}
+                <div className="max-w-2xl mx-auto mb-8">
+                  <div className="relative">
+                    <Input
+                      placeholder="搜索标题、描述或标签..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-14 text-lg bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/20 transition-all backdrop-blur-sm pr-12"
+                    />
+                    <Filter className="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary/80 w-5 h-5" />
+                  </div>
+                </div>
+
+                {/* 标签云 */}
+                <div className="flex flex-wrap justify-center gap-3 mb-8">
+                  <Button
+                    key="all"
+                    variant="outline"
+                    size="sm"
+                    className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes("全部") || selectedTags.length === 0
+                      ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                      : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
+                      }`}
+                    onClick={() => setSelectedTags(["全部"])}
+                  >
+                    全部
+                  </Button>
+                  {allTags.map((tag) => (
+                    <Button
+                      key={tag}
+                      variant="outline"
+                      size="sm"
+                      className={`rounded-full px-4 py-2 transition-all ${selectedTags.includes(tag)
+                        ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                        : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
+                        }`}
+                      onClick={() => toggleTag(tag)}
+                    >
+                      {tag}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* 添加新书签按钮 */}
+                <div className="text-center mb-12">
+                  <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white px-8 py-3 text-lg rounded-full">
+                        <Plus className="w-5 h-5 mr-2" />
+                        添加新书签
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-card border-border sm:max-w-lg">
+                      <DialogHeader>
+                        <DialogTitle className="text-white flex items-center gap-2">
+                          <Plus className="w-5 h-5" />
+                          添加新书签
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="url" className="text-white">
+                            链接 *
+                          </Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input
+                              id="url"
+                              value={newBookmark.url}
+                              onChange={(e) => setNewBookmark((prev) => ({ ...prev, url: e.target.value }))}
+                              placeholder="https://example.com"
+                              className="bg-secondary/40 border-white/10 text-white"
+                            />
+                            <FetchMetadataButton
+                              url={newBookmark.url}
+                              onFetchComplete={handleMetadataFetch}
+                              aiSettings={aiSettings}
+                              isDisabled={!newBookmark.url.trim()}
+                            />
                           </div>
-                          <div className="flex gap-2 pt-6">
+                        </div>
+                        <div>
+                          <Label htmlFor="title" className="text-white">
+                            标题 *
+                          </Label>
+                          <Input
+                            id="title"
+                            value={newBookmark.title}
+                            onChange={(e) => setNewBookmark((prev) => ({ ...prev, title: e.target.value }))}
+                            placeholder="输入书签标题"
+                            className="mt-1 bg-secondary/40 border-white/10 text-white"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="image" className="text-white">
+                            图片链接
+                          </Label>
+                          <Input
+                            id="image"
+                            value={newBookmark.image}
+                            onChange={(e) => setNewBookmark((prev) => ({ ...prev, image: e.target.value }))}
+                            placeholder="https://example.com/image.jpg"
+                            className="mt-1 bg-secondary/40 border-white/10 text-white"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="tags" className="text-white">
+                            标签
+                          </Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input
+                              id="tags"
+                              value={newBookmark.tags}
+                              onChange={(e) => setNewBookmark((prev) => ({ ...prev, tags: e.target.value }))}
+                              placeholder="标签1, 标签2, 标签3"
+                              className="bg-secondary/40 border-white/10 text-white"
+                            />
                             <Button
-                              onClick={toggleSelectAll}
-                              className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
-                            >
-                              {selectedShares.length === filteredPlazaBookmarks.length ? "取消全选" : "全选"}
-                            </Button>
-                            <Button
-                              onClick={batchDeleteShares}
-                              variant="destructive"
+                              type="button"
+                              variant="outline"
                               size="sm"
-                              disabled={selectedShares.length === 0}
+                              onClick={() => openTagSelector(false)}
+                              className="border-white/10 text-white hover:bg-purple-700/50"
                             >
-                              删除选中 ({selectedShares.length})
+                              <Tags className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
-
-                        <Separator className="bg-purple-600/30" />
-
-                        <div className="max-h-96 overflow-y-auto space-y-2">
-                          {mySharedBookmarks.map((bookmark) => (
-                            <div
-                              key={bookmark.shareId}
-                              className="flex items-center gap-3 p-3 bg-secondary/40 rounded-lg"
-                            >
-                              <Checkbox
-                                checked={selectedShares.includes(bookmark.shareId)}
-                                onCheckedChange={() => toggleShareSelection(bookmark.shareId)}
-                                className="border-white/10"
-                              />
-                              <img
-                                src={getFavicon(bookmark.url) || "/placeholder.svg"}
-                                alt=""
-                                className="w-8 h-8 rounded flex-shrink-0"
-                                onError={(e) => {
-                                  ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
-                                }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <h4 className="text-white font-medium truncate">{bookmark.title.length > 40 ? `${bookmark.title.substring(0, 35)}...` : bookmark.title}</h4>
-                                <p className="text-primary/80 text-sm truncate">{bookmark.url.length > 60 ? `${bookmark.url.substring(0, 60)}...` : bookmark.url}</p>
-                              </div>
-                              <Button
-                                onClick={() => deleteShare(bookmark.shareId)}
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          ))}
+                        <div>
+                          <Label htmlFor="description" className="text-white">
+                            描述
+                          </Label>
+                          <Textarea
+                            id="description"
+                            value={newBookmark.description}
+                            onChange={(e) => setNewBookmark((prev) => ({ ...prev, description: e.target.value }))}
+                            placeholder="书签描述"
+                            className="mt-1 bg-secondary/40 border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => setIsAddDialogOpen(false)}
+                            className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white"
+                          >
+                            取消
+                          </Button>
+                          <Button
+                            onClick={addBookmark}
+                            className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
+                          >
+                            添加书签
+                          </Button>
                         </div>
                       </div>
                     </DialogContent>
                   </Dialog>
                 </div>
 
-                {/* 标签筛选 */}
-                {plazaTags.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <span className="text-sm text-primary/80 flex items-center gap-2 mr-2">
-                      <Filter className="w-4 h-4" />
-                      标签筛选:
-                    </span>
+                {/* 书签展示 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredBookmarks.map((bookmark) => (
+                    <Card
+                      key={bookmark.id}
+                      className="neon-card-red group relative rounded-[2rem] overflow-hidden p-3 h-full flex flex-col border-0"
+                    >
+                      {/* Image Container (Full Bleed) */}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-[#111]">
+                        {bookmark.image ? (
+                          <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 block cursor-pointer">
+                            <img
+                              src={bookmark.image}
+                              alt={bookmark.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => {
+                                ; (e.target as HTMLImageElement).style.display = "none"
+                              }}
+                            />
+                            {/* Hover Overlay */}
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          </a>
+                        ) : (
+                          <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black cursor-pointer">
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=128`}
+                              alt=""
+                              className="w-16 h-16 opacity-20 grayscale brightness-200"
+                              onError={(e) => {
+                                ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
+                              }}
+                            />
+                          </a>
+                        )}
+
+                        {/* Top Right Actions (Dropdown) */}
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-black text-white">
+                                <span className="sr-only">Menu</span>
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                </svg>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-[#111] border-white/10 text-zinc-300">
+                              <DropdownMenuItem onClick={() => window.open(bookmark.url, "_blank")} className="focus:bg-zinc-800 focus:text-white">
+                                <ExternalLink className="w-4 h-4 mr-2" /> 访问
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => shareToPlaza(bookmark)} className="focus:bg-zinc-800 focus:text-white">
+                                <Share2 className="w-4 h-4 mr-2" /> 分享到广场
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => { setEditingBookmark(bookmark); setIsEditDialogOpen(true); }} className="focus:bg-zinc-800 focus:text-white">
+                                <Edit3 className="w-4 h-4 mr-2" /> 编辑
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => deleteBookmark(bookmark.id)} className="text-red-400 focus:bg-red-900/30 focus:text-red-300">
+                                <Trash2 className="w-4 h-4 mr-2" /> 删除
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+
+                      {/* Content Section */}
+                      <div className="flex flex-col flex-1 p-2 pt-4 space-y-3">
+                        {/* Meta / Tags Row */}
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex gap-2 items-center overflow-hidden">
+                            {bookmark.tags.length > 0 ? (
+                              <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-400 border border-white/5 font-medium truncate max-w-[150px]">
+                                {bookmark.tags[0]}
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-500 border border-white/5 font-medium">未分类</span>
+                            )}
+                            {bookmark.tags.length > 1 && (
+                              <span className="text-zinc-600">+{bookmark.tags.length - 1}</span>
+                            )}
+                          </div>
+                          <div className="text-zinc-600 font-mono text-[10px] uppercase tracking-wider">
+                            {/* Using createdAt as a proxy for date, simplified */}
+                            {new Date(bookmark.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </div>
+                        </div>
+
+                        {/* Title */}
+                        <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="block group/title">
+                          <h3 className="text-lg font-bold text-zinc-100 leading-snug group-hover/title:text-white transition-colors line-clamp-2">
+                            {bookmark.title}
+                          </h3>
+                        </a>
+
+                        {/* Description */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="text-sm text-zinc-500 line-clamp-2 flex-1 leading-relaxed cursor-help">
+                              {bookmark.description || "暂无描述信息..."}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[300px] bg-zinc-900 border-white/10 text-zinc-300 p-3 leading-relaxed">
+                            <p>{bookmark.description || "暂无描述信息..."}</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Footer: Domain & Favicon */}
+                        <div className="pt-2 flex items-center gap-2.5 border-t border-white/5 mt-auto">
+                          <div className="w-6 h-6 rounded-full bg-[#1c1c1c] p-1 flex items-center justify-center border border-white/5">
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=32`}
+                              alt=""
+                              className="w-full h-full object-contain rounded-full"
+                              onError={(e) => {
+                                ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs font-medium text-zinc-400 hover:text-zinc-300 transition-colors">
+                            {new URL(bookmark.url).hostname.replace('www.', '')}
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+
+                {filteredBookmarks.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-primary/80 text-lg mb-4">暂无书签</div>
+                    <p className="text-muted-foreground">点击上方"添加新书签"按钮开始收藏您喜欢的网站</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="plaza" className="space-y-8">
+                <div className="text-center py-12">
+                  <h2 className="text-4xl font-bold text-white mb-4">书签广场</h2>
+                  <p className="text-muted-foreground text-lg">发现和收藏他人分享的精彩书签</p>
+                </div>
+
+                {/* 广场搜索和筛选 */}
+                <div className="space-y-6">
+                  {/* 搜索框 */}
+                  <div className="max-w-2xl mx-auto">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary/80 w-5 h-5" />
+                      <Input
+                        placeholder="搜索标题、描述、标签或分享者..."
+                        value={plazaSearchQuery}
+                        onChange={(e) => setPlazaSearchQuery(e.target.value)}
+                        className="h-12 text-lg bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white placeholder:text-primary/80 pl-12"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 控制按钮 */}
+                  <div className="flex flex-wrap justify-center gap-4">
                     <Button
-                      key="all"
                       variant="outline"
-                      size="sm"
-                      className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes("全部") || plazaSelectedTags.length === 0
+                      className={`${showMySharesOnly
                         ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
                         : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                         }`}
-                      onClick={() => setPlazaSelectedTags(["全部"])}
+                      onClick={() => {
+                        setShowMySharesOnly(!showMySharesOnly)
+                        if (!showMySharesOnly) {
+                          fetchMyShares()
+                        }
+                      }}
                     >
-                      全部
+                      <Eye className="w-4 h-4 mr-2" />
+                      {showMySharesOnly ? "显示全部" : "我的分享"}
                     </Button>
-                    {plazaTags.slice(0, 11).map((tag) => (
+
+                    <Dialog open={isManageSharesDialogOpen} onOpenChange={setIsManageSharesDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
+                          onClick={fetchMyShares}
+                        >
+                          <Settings className="w-4 h-4 mr-2" />
+                          管理分享
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-card border-border sm:max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle className="text-white flex items-center gap-2">
+                            <Settings className="w-5 h-5" />
+                            管理我的分享
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4">
+                            <div className="flex-1">
+                              <Label htmlFor="deleteSecret" className="text-white">
+                                删除密钥
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="deleteSecret"
+                                  type={showDeleteSecret ? "text" : "password"}
+                                  value={deleteSecret}
+                                  onChange={(e) => setDeleteSecret(e.target.value)}
+                                  placeholder="输入您的分享密钥"
+                                  className="mt-1 bg-secondary/40 border-white/10 text-white pr-10"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute right-0 top-1 h-8 w-8 p-0 text-primary/80 hover:text-white"
+                                  onClick={() => setShowDeleteSecret(!showDeleteSecret)}
+                                >
+                                  {showDeleteSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="flex gap-2 pt-6">
+                              <Button
+                                onClick={toggleSelectAll}
+                                className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
+                              >
+                                {selectedShares.length === filteredPlazaBookmarks.length ? "取消全选" : "全选"}
+                              </Button>
+                              <Button
+                                onClick={batchDeleteShares}
+                                variant="destructive"
+                                size="sm"
+                                disabled={selectedShares.length === 0}
+                              >
+                                删除选中 ({selectedShares.length})
+                              </Button>
+                            </div>
+                          </div>
+
+                          <Separator className="bg-purple-600/30" />
+
+                          <div className="max-h-96 overflow-y-auto space-y-2">
+                            {mySharedBookmarks.map((bookmark) => (
+                              <div
+                                key={bookmark.shareId}
+                                className="flex items-center gap-3 p-3 bg-secondary/40 rounded-lg"
+                              >
+                                <Checkbox
+                                  checked={selectedShares.includes(bookmark.shareId)}
+                                  onCheckedChange={() => toggleShareSelection(bookmark.shareId)}
+                                  className="border-white/10"
+                                />
+                                <img
+                                  src={getFavicon(bookmark.url) || "/placeholder.svg"}
+                                  alt=""
+                                  className="w-8 h-8 rounded flex-shrink-0"
+                                  onError={(e) => {
+                                    ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=32&width=32"
+                                  }}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-white font-medium truncate">{bookmark.title.length > 40 ? `${bookmark.title.substring(0, 35)}...` : bookmark.title}</h4>
+                                  <p className="text-primary/80 text-sm truncate">{bookmark.url.length > 60 ? `${bookmark.url.substring(0, 60)}...` : bookmark.url}</p>
+                                </div>
+                                <Button
+                                  onClick={() => deleteShare(bookmark.shareId)}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+
+                  {/* 标签筛选 */}
+                  {plazaTags.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <span className="text-sm text-primary/80 flex items-center gap-2 mr-2">
+                        <Filter className="w-4 h-4" />
+                        标签筛选:
+                      </span>
                       <Button
-                        key={tag}
+                        key="all"
                         variant="outline"
                         size="sm"
-                        className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes(tag)
+                        className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes("全部") || plazaSelectedTags.length === 0
                           ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
                           : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                           }`}
-                        onClick={() => togglePlazaTag(tag)}
+                        onClick={() => setPlazaSelectedTags(["全部"])}
                       >
-                        {tag}
+                        全部
                       </Button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* 广场书签展示 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredPlazaBookmarks.map((bookmark) => (
-                  <Card
-                    key={bookmark.shareId}
-                    className="neon-card-red group relative rounded-[2rem] overflow-hidden p-3 h-full flex flex-col border-0"
-                  >
-                    {/* Image Container (Full Bleed) */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-[#111]">
-                      {bookmark.image ? (
-                        <div className="absolute inset-0">
-                          <img
-                            src={bookmark.image}
-                            alt={bookmark.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            onError={(e) => {
-                              ; (e.target as HTMLImageElement).style.display = "none"
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black">
-                          <img
-                            src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=128`}
-                            alt=""
-                            className="w-16 h-16 opacity-20 grayscale brightness-200"
-                            onError={(e) => {
-                              ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      {/* Selection Checkbox (for Batch Actions) */}
-                      {showMySharesOnly && (
-                        <div className="absolute top-3 left-3 z-20">
-                          <Checkbox
-                            checked={selectedShares.includes(bookmark.shareId)}
-                            onCheckedChange={() => toggleShareSelection(bookmark.shareId)}
-                            className="w-5 h-5 border-2 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Content Section */}
-                    <div className="flex flex-col flex-1 p-2 pt-4 space-y-3">
-                      {/* Meta / Tags Row */}
-                      <div className="flex items-center justify-between text-xs">
-                        <div className="flex gap-2 items-center overflow-hidden">
-                          {bookmark.tags.length > 0 ? (
-                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-400 border border-white/5 font-medium truncate max-w-[150px]">
-                              {bookmark.tags[0]}
-                            </span>
-                          ) : (
-                            <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-500 border border-white/5 font-medium">未分类</span>
-                          )}
-                          {bookmark.tags.length > 1 && (
-                            <span className="text-zinc-600">+{bookmark.tags.length - 1}</span>
-                          )}
-                        </div>
-                        <div className="text-zinc-600 font-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 inline-block"></span>
-                          {/* Using likes as a proxy for "views" or "popularity" since we have that data */}
-                          {bookmark.likes || 0} LIKES
-                        </div>
-                      </div>
-
-                      {/* Title */}
-                      <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="block group/title">
-                        <h3 className="text-lg font-bold text-zinc-100 leading-snug group-hover/title:text-white transition-colors line-clamp-2">
-                          {bookmark.title}
-                        </h3>
-                      </a>
-
-                      {/* Description */}
-                      <p className="text-sm text-zinc-500 line-clamp-2 flex-1 leading-relaxed">
-                        {bookmark.description || "暂无描述信息..."}
-                      </p>
-
-                      {/* Footer: Sharer & Action */}
-                      <div className="pt-2 flex items-center justify-between border-t border-white/5 mt-auto">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
-                            {bookmark.sharedBy.substring(0, 2).toUpperCase()}
-                          </div>
-                          <span className="text-xs font-medium text-zinc-400">
-                            {bookmark.sharedBy}
-                          </span>
-                        </div>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 px-3 text-xs rounded-full bg-[#1c1c1c] text-zinc-400 hover:text-white hover:bg-[#2a2a2a] border border-white/5"
-                          onClick={() => {
-                            const newBookmark: Bookmark = {
-                              id: Date.now().toString(),
-                              title: bookmark.title,
-                              url: bookmark.url,
-                              image: bookmark.image,
-                              tags: bookmark.tags,
-                              description: bookmark.description,
-                              createdAt: new Date().toISOString(),
-                              updatedAt: new Date().toISOString(),
-                            }
-                            const updatedBookmarks = [...bookmarks, newBookmark]
-                            saveToStorage(updatedBookmarks)
-                            toast({
-                              title: "收藏成功",
-                              description: "已添加到您的书签列表",
-                            })
-                          }}
-                        >
-                          <Heart className="w-3 h-3 mr-1.5" /> 收藏
-                        </Button>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-
-              {filteredPlazaBookmarks.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="text-primary/80 text-lg mb-4">
-                    {showMySharesOnly ? "您还没有分享任何书签" : "暂无分享的书签"}
-                  </div>
-                  <p className="text-muted-foreground">
-                    {showMySharesOnly ? "去我的书签页面分享一些精彩内容吧！" : "成为第一个分享书签的用户吧！"}
-                  </p>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-
-          {/* 标签选择器对话框 */}
-          <Dialog open={isTagSelectorOpen} onOpenChange={setIsTagSelectorOpen}>
-            <DialogContent className="bg-card border-border sm:max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-white flex items-center gap-2">
-                  <Tags className="w-5 h-5" />
-                  选择标签
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                {/* 当前选中的标签 */}
-                <div>
-                  <Label className="text-white text-sm">已选择的标签</Label>
-                  <div className="flex flex-wrap gap-2 mt-2 p-3 bg-secondary/40 rounded-lg min-h-[60px]">
-                    {currentEditingTags.length === 0 ? (
-                      <span className="text-primary/80 text-sm">暂无选择的标签</span>
-                    ) : (
-                      currentEditingTags.map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="bg-purple-600 text-white flex items-center gap-1"
-                        >
-                          {tag}
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 w-4 p-0 hover:bg-purple-700"
-                            onClick={() => removeTag(tag)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </Badge>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                {/* 添加新标签 */}
-                <div>
-                  <Label className="text-white text-sm">添加新标签</Label>
-                  <div className="flex gap-2 mt-2">
-                    <Input
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      placeholder="输入新标签名称"
-                      className="bg-secondary/40 border-white/10 text-white"
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault()
-                          addNewTag()
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      onClick={addNewTag}
-                      disabled={!tagInput.trim() || currentEditingTags.includes(tagInput.trim())}
-                      className="bg-purple-600 hover:bg-purple-700"
-                    >
-                      添加
-                    </Button>
-                  </div>
-                </div>
-
-                <Separator className="bg-purple-600/30" />
-
-                {/* 现有标签选择 */}
-                <div>
-                  <Label className="text-white text-sm">从现有标签中选择</Label>
-                  <div className="max-h-60 overflow-y-auto mt-2">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {allTags.map((tag) => (
+                      {plazaTags.slice(0, 11).map((tag) => (
                         <Button
                           key={tag}
-                          type="button"
                           variant="outline"
                           size="sm"
-                          className={`justify-start text-left ${currentEditingTags.includes(tag)
+                          className={`rounded-full px-3 py-1 text-xs transition-all ${plazaSelectedTags.includes(tag)
                             ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
-                            : "bg-secondary/40 border-white/10 text-muted-foreground hover:bg-purple-700/50"
+                            : "bg-secondary/50 border-white/10 hover:bg-secondary/80 text-muted-foreground hover:bg-purple-700/50"
                             }`}
-                          onClick={() => toggleTagInSelector(tag)}
+                          onClick={() => togglePlazaTag(tag)}
                         >
-                          <Checkbox checked={currentEditingTags.includes(tag)} className="mr-2 h-3 w-3" />
                           {tag}
                         </Button>
                       ))}
                     </div>
+                  )}
+                </div>
+
+                {/* 广场书签展示 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredPlazaBookmarks.map((bookmark) => (
+                    <Card
+                      key={bookmark.shareId}
+                      className="neon-card-red group relative rounded-[2rem] overflow-hidden p-3 h-full flex flex-col border-0"
+                    >
+                      {/* Image Container (Full Bleed) */}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[1.5rem] bg-[#111]">
+                        {bookmark.image ? (
+                          <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 block cursor-pointer">
+                            <img
+                              src={bookmark.image}
+                              alt={bookmark.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              onError={(e) => {
+                                ; (e.target as HTMLImageElement).style.display = "none"
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          </a>
+                        ) : (
+                          <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black cursor-pointer">
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=128`}
+                              alt=""
+                              className="w-16 h-16 opacity-20 grayscale brightness-200"
+                              onError={(e) => {
+                                ; (e.target as HTMLImageElement).src = "/placeholder.svg?height=48&width=48"
+                              }}
+                            />
+                          </a>
+                        )}
+
+                        {/* Selection Checkbox (for Batch Actions) */}
+                        {showMySharesOnly && (
+                          <div className="absolute top-3 left-3 z-20">
+                            <Checkbox
+                              checked={selectedShares.includes(bookmark.shareId)}
+                              onCheckedChange={() => toggleShareSelection(bookmark.shareId)}
+                              className="w-5 h-5 border-2 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content Section */}
+                      <div className="flex flex-col flex-1 p-2 pt-4 space-y-3">
+                        {/* Meta / Tags Row */}
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex gap-2 items-center overflow-hidden">
+                            {bookmark.tags.length > 0 ? (
+                              <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-400 border border-white/5 font-medium truncate max-w-[150px]">
+                                {bookmark.tags[0]}
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-md bg-[#1c1c1c] text-zinc-500 border border-white/5 font-medium">未分类</span>
+                            )}
+                            {bookmark.tags.length > 1 && (
+                              <span className="text-zinc-600">+{bookmark.tags.length - 1}</span>
+                            )}
+                          </div>
+                          <div className="text-zinc-600 font-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 inline-block"></span>
+                            {/* Using likes as a proxy for "views" or "popularity" since we have that data */}
+                            {bookmark.likes || 0} LIKES
+                          </div>
+                        </div>
+
+                        {/* Title */}
+                        <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="block group/title">
+                          <h3 className="text-lg font-bold text-zinc-100 leading-snug group-hover/title:text-white transition-colors line-clamp-2">
+                            {bookmark.title}
+                          </h3>
+                        </a>
+
+                        {/* Description */}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="text-sm text-zinc-500 line-clamp-2 flex-1 leading-relaxed cursor-help">
+                              {bookmark.description || "暂无描述信息..."}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[300px] bg-zinc-900 border-white/10 text-zinc-300 p-3 leading-relaxed">
+                            <p>{bookmark.description || "暂无描述信息..."}</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        {/* Footer: Sharer & Action */}
+                        <div className="pt-2 flex items-center justify-between border-t border-white/5 mt-auto">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white ring-2 ring-[#0a0a0a]">
+                              {bookmark.sharedBy.substring(0, 2).toUpperCase()}
+                            </div>
+                            <span className="text-xs font-medium text-zinc-400">
+                              {bookmark.sharedBy}
+                            </span>
+                          </div>
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-3 text-xs rounded-full bg-[#1c1c1c] text-zinc-400 hover:text-white hover:bg-[#2a2a2a] border border-white/5"
+                            onClick={() => {
+                              const newBookmark: Bookmark = {
+                                id: Date.now().toString(),
+                                title: bookmark.title,
+                                url: bookmark.url,
+                                image: bookmark.image,
+                                tags: bookmark.tags,
+                                description: bookmark.description,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString(),
+                              }
+                              const updatedBookmarks = [...bookmarks, newBookmark]
+                              saveToStorage(updatedBookmarks)
+                              toast({
+                                title: "收藏成功",
+                                description: "已添加到您的书签列表",
+                              })
+                            }}
+                          >
+                            <Heart className="w-3 h-3 mr-1.5" /> 收藏
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+
+                {filteredPlazaBookmarks.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-primary/80 text-lg mb-4">
+                      {showMySharesOnly ? "您还没有分享任何书签" : "暂无分享的书签"}
+                    </div>
+                    <p className="text-muted-foreground">
+                      {showMySharesOnly ? "去我的书签页面分享一些精彩内容吧！" : "成为第一个分享书签的用户吧！"}
+                    </p>
                   </div>
-                </div>
+                )}
+              </TabsContent>
+            </Tabs>
 
-                <div className="flex gap-2 pt-4">
-                  <Button
-                    type="button"
-                    onClick={() => setIsTagSelectorOpen(false)}
-                    className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white"
-                  >
-                    取消
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={confirmTagSelection}
-                    className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
-                  >
-                    确认选择
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          {/* 分享设置对话框 */}
-          <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-            <DialogContent className="bg-card border-border sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle className="text-white flex items-center gap-2">
-                  <Share2 className="w-5 h-5" />
-                  分享设置
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="text-sm text-muted-foreground bg-purple-900/30 p-3 rounded-lg">
-                  <p>🔐 分享密钥用于管理您的分享内容</p>
-                  <p>请设置并妥善保管您的分享密钥，它将用于：</p>
-                  <ul className="list-disc pl-5 mt-1 space-y-1">
-                    <li>标识您分享的书签</li>
-                    <li>管理和删除您的分享</li>
-                    <li>批量操作您的分享内容</li>
-                  </ul>
-                </div>
-                <div>
-                  <Label htmlFor="shareSecret" className="text-white">
-                    分享密钥 *
-                  </Label>
-                  <Input
-                    id="shareSecret"
-                    value={shareSettings.shareSecret}
-                    onChange={(e) => setShareSettings((prev) => ({ ...prev, shareSecret: e.target.value }))}
-                    placeholder="设置一个唯一的分享密钥"
-                    className="mt-1 bg-secondary/40 border-white/10 text-white"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="displayName" className="text-white">
-                    显示名称
-                  </Label>
-                  <Input
-                    id="displayName"
-                    value={shareSettings.displayName}
-                    onChange={(e) => setShareSettings((prev) => ({ ...prev, displayName: e.target.value }))}
-                    placeholder="您的显示名称（可选）"
-                    className="mt-1 bg-secondary/40 border-white/10 text-white"
-                  />
-                </div>
-                <Button
-                  onClick={saveShareSettings}
-                  className="w-full bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
-                >
-                  保存设置
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          {/* 编辑对话框 */}
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="bg-card border-border sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle className="text-white flex items-center gap-2">
-                  <Edit3 className="w-5 h-5" />
-                  编辑书签
-                </DialogTitle>
-              </DialogHeader>
-              {editingBookmark && (
+            {/* 标签选择器对话框 */}
+            <Dialog open={isTagSelectorOpen} onOpenChange={setIsTagSelectorOpen}>
+              <DialogContent className="bg-card border-border sm:max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-white flex items-center gap-2">
+                    <Tags className="w-5 h-5" />
+                    选择标签
+                  </DialogTitle>
+                </DialogHeader>
                 <div className="space-y-4">
+                  {/* 当前选中的标签 */}
                   <div>
-                    <Label htmlFor="editUrl" className="text-white">
-                      链接
-                    </Label>
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        id="editUrl"
-                        value={editingBookmark.url}
-                        onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, url: e.target.value } : null))}
-                        className="bg-secondary/40 border-white/10 text-white"
-                      />
-                      <FetchMetadataButton
-                        url={editingBookmark.url}
-                        onFetchComplete={handleMetadataFetch}
-                        aiSettings={aiSettings}
-                        isDisabled={!editingBookmark.url.trim()}
-                      />
+                    <Label className="text-white text-sm">已选择的标签</Label>
+                    <div className="flex flex-wrap gap-2 mt-2 p-3 bg-secondary/40 rounded-lg min-h-[60px]">
+                      {currentEditingTags.length === 0 ? (
+                        <span className="text-primary/80 text-sm">暂无选择的标签</span>
+                      ) : (
+                        currentEditingTags.map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="bg-purple-600 text-white flex items-center gap-1"
+                          >
+                            {tag}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-4 w-4 p-0 hover:bg-purple-700"
+                              onClick={() => removeTag(tag)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Badge>
+                        ))
+                      )}
                     </div>
                   </div>
+
+                  {/* 添加新标签 */}
                   <div>
-                    <Label htmlFor="editTitle" className="text-white">
-                      标题
-                    </Label>
-                    <Input
-                      id="editTitle"
-                      value={editingBookmark.title}
-                      onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, title: e.target.value } : null))}
-                      className="mt-1 bg-secondary/40 border-white/10 text-white"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="editImage" className="text-white">
-                      图片链接
-                    </Label>
-                    <Input
-                      id="editImage"
-                      value={editingBookmark.image || ""}
-                      onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, image: e.target.value } : null))}
-                      className="mt-1 bg-secondary/40 border-white/10 text-white"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="editTags" className="text-white">
-                      标签
-                    </Label>
-                    <div className="flex gap-2 mt-1">
+                    <Label className="text-white text-sm">添加新标签</Label>
+                    <div className="flex gap-2 mt-2">
                       <Input
-                        id="editTags"
-                        value={editingBookmark.tags.join(", ")}
-                        onChange={(e) =>
-                          setEditingBookmark((prev) =>
-                            prev
-                              ? {
-                                ...prev,
-                                tags: e.target.value
-                                  .split(",")
-                                  .map((tag) => tag.trim())
-                                  .filter((tag) => tag),
-                              }
-                              : null,
-                          )
-                        }
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        placeholder="输入新标签名称"
                         className="bg-secondary/40 border-white/10 text-white"
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault()
+                            addNewTag()
+                          }
+                        }}
                       />
                       <Button
                         type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openTagSelector(true)}
-                        className="border-white/10 text-white hover:bg-purple-700/50"
+                        onClick={addNewTag}
+                        disabled={!tagInput.trim() || currentEditingTags.includes(tagInput.trim())}
+                        className="bg-purple-600 hover:bg-purple-700"
                       >
-                        <Tags className="w-4 h-4" />
+                        添加
                       </Button>
                     </div>
                   </div>
+
+                  <Separator className="bg-purple-600/30" />
+
+                  {/* 现有标签选择 */}
                   <div>
-                    <Label htmlFor="editDescription" className="text-white">
-                      描述
-                    </Label>
-                    <Textarea
-                      id="editDescription"
-                      value={editingBookmark.description || ""}
-                      onChange={(e) =>
-                        setEditingBookmark((prev) => (prev ? { ...prev, description: e.target.value } : null))
-                      }
-                      className="mt-1 bg-secondary/40 border-white/10 text-white"
-                    />
+                    <Label className="text-white text-sm">从现有标签中选择</Label>
+                    <div className="max-h-60 overflow-y-auto mt-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {allTags.map((tag) => (
+                          <Button
+                            key={tag}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className={`justify-start text-left ${currentEditingTags.includes(tag)
+                              ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                              : "bg-secondary/40 border-white/10 text-muted-foreground hover:bg-purple-700/50"
+                              }`}
+                            onClick={() => toggleTagInSelector(tag)}
+                          >
+                            <Checkbox checked={currentEditingTags.includes(tag)} className="mr-2 h-3 w-3" />
+                            {tag}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
+
+                  <div className="flex gap-2 pt-4">
                     <Button
-                      onClick={() => setIsEditDialogOpen(false)}
+                      type="button"
+                      onClick={() => setIsTagSelectorOpen(false)}
                       className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white"
                     >
                       取消
                     </Button>
                     <Button
-                      onClick={updateBookmark}
+                      type="button"
+                      onClick={confirmTagSelection}
                       className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
                     >
-                      更新书签
+                      确认选择
                     </Button>
                   </div>
                 </div>
-              )}
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
 
-          {/* AI设置对话框 */}
-          <AISettingsDialog
-            open={isAISettingsDialogOpen}
-            onOpenChange={setIsAISettingsDialogOpen}
-            settings={aiSettings}
-            onSave={saveAISettings}
-          />
+            {/* 分享设置对话框 */}
+            <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+              <DialogContent className="bg-card border-border sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="text-white flex items-center gap-2">
+                    <Share2 className="w-5 h-5" />
+                    分享设置
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="text-sm text-muted-foreground bg-purple-900/30 p-3 rounded-lg">
+                    <p>🔐 分享密钥用于管理您的分享内容</p>
+                    <p>请设置并妥善保管您的分享密钥，它将用于：</p>
+                    <ul className="list-disc pl-5 mt-1 space-y-1">
+                      <li>标识您分享的书签</li>
+                      <li>管理和删除您的分享</li>
+                      <li>批量操作您的分享内容</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <Label htmlFor="shareSecret" className="text-white">
+                      分享密钥 *
+                    </Label>
+                    <Input
+                      id="shareSecret"
+                      value={shareSettings.shareSecret}
+                      onChange={(e) => setShareSettings((prev) => ({ ...prev, shareSecret: e.target.value }))}
+                      placeholder="设置一个唯一的分享密钥"
+                      className="mt-1 bg-secondary/40 border-white/10 text-white"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="displayName" className="text-white">
+                      显示名称
+                    </Label>
+                    <Input
+                      id="displayName"
+                      value={shareSettings.displayName}
+                      onChange={(e) => setShareSettings((prev) => ({ ...prev, displayName: e.target.value }))}
+                      placeholder="您的显示名称（可选）"
+                      className="mt-1 bg-secondary/40 border-white/10 text-white"
+                    />
+                  </div>
+                  <Button
+                    onClick={saveShareSettings}
+                    className="w-full bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
+                  >
+                    保存设置
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
 
-          {/* 批量管理对话框 */}
-          <BatchManageDialog
-            open={isBatchManageDialogOpen}
-            onOpenChange={setIsBatchManageDialogOpen}
-            bookmarks={filteredBookmarks}
-            onBatchDelete={handleBatchDelete}
-            onBatchShare={handleBatchShare}
-            onBatchDeleteTags={handleBatchDeleteTags}
-            shareSettings={shareSettings}
-          />
+            {/* 编辑对话框 */}
+            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+              <DialogContent className="bg-card border-border sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="text-white flex items-center gap-2">
+                    <Edit3 className="w-5 h-5" />
+                    编辑书签
+                  </DialogTitle>
+                </DialogHeader>
+                {editingBookmark && (
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="editUrl" className="text-white">
+                        链接
+                      </Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          id="editUrl"
+                          value={editingBookmark.url}
+                          onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, url: e.target.value } : null))}
+                          className="bg-secondary/40 border-white/10 text-white"
+                        />
+                        <FetchMetadataButton
+                          url={editingBookmark.url}
+                          onFetchComplete={handleMetadataFetch}
+                          aiSettings={aiSettings}
+                          isDisabled={!editingBookmark.url.trim()}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="editTitle" className="text-white">
+                        标题
+                      </Label>
+                      <Input
+                        id="editTitle"
+                        value={editingBookmark.title}
+                        onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, title: e.target.value } : null))}
+                        className="mt-1 bg-secondary/40 border-white/10 text-white"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="editImage" className="text-white">
+                        图片链接
+                      </Label>
+                      <Input
+                        id="editImage"
+                        value={editingBookmark.image || ""}
+                        onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, image: e.target.value } : null))}
+                        className="mt-1 bg-secondary/40 border-white/10 text-white"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="editTags" className="text-white">
+                        标签
+                      </Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          id="editTags"
+                          value={editingBookmark.tags.join(", ")}
+                          onChange={(e) =>
+                            setEditingBookmark((prev) =>
+                              prev
+                                ? {
+                                  ...prev,
+                                  tags: e.target.value
+                                    .split(",")
+                                    .map((tag) => tag.trim())
+                                    .filter((tag) => tag),
+                                }
+                                : null,
+                            )
+                          }
+                          className="bg-secondary/40 border-white/10 text-white"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openTagSelector(true)}
+                          className="border-white/10 text-white hover:bg-purple-700/50"
+                        >
+                          <Tags className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="editDescription" className="text-white">
+                        描述
+                      </Label>
+                      <Textarea
+                        id="editDescription"
+                        value={editingBookmark.description || ""}
+                        onChange={(e) =>
+                          setEditingBookmark((prev) => (prev ? { ...prev, description: e.target.value } : null))
+                        }
+                        className="mt-1 bg-secondary/40 border-white/10 text-white"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => setIsEditDialogOpen(false)}
+                        className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white"
+                      >
+                        取消
+                      </Button>
+                      <Button
+                        onClick={updateBookmark}
+                        className="flex-1 bg-primary hover:bg-primary/90 shadow-[0_0_15px_rgba(124,58,237,0.5)] border border-white/10 text-white"
+                      >
+                        更新书签
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+
+            {/* AI设置对话框 */}
+            <AISettingsDialog
+              open={isAISettingsDialogOpen}
+              onOpenChange={setIsAISettingsDialogOpen}
+              settings={aiSettings}
+              onSave={saveAISettings}
+            />
+
+            {/* 批量管理对话框 */}
+            <BatchManageDialog
+              open={isBatchManageDialogOpen}
+              onOpenChange={setIsBatchManageDialogOpen}
+              bookmarks={filteredBookmarks}
+              onBatchDelete={handleBatchDelete}
+              onBatchShare={handleBatchShare}
+              onBatchDeleteTags={handleBatchDeleteTags}
+              shareSettings={shareSettings}
+            />
+          </div>
         </div>
+        <Toaster />
       </div>
-      <Toaster />
-    </div>
+    </TooltipProvider>
   )
 }
