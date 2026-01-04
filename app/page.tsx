@@ -47,6 +47,7 @@ import AISettingsDialog from "./components/ai-settings-dialog"
 import FetchMetadataButton from "./components/fetch-metadata-button"
 import BatchManageDialog from "./components/batch-manage-dialog"
 import SnowEffect from "./components/snow-effect"
+import SmartSearch from "./components/smart-search"
 
 interface Bookmark {
   id: string
@@ -109,7 +110,7 @@ export default function BookmarkManager() {
   })
   const [sharedBookmarks, setSharedBookmarks] = useState<SharedBookmark[]>([])
   const [mySharedBookmarks, setMySharedBookmarks] = useState<SharedBookmark[]>([])
-  const [activeTab, setActiveTab] = useState("plaza")
+  const [activeTab, setActiveTab] = useState("smart-search")
   const [plazaSearchQuery, setPlazaSearchQuery] = useState("")
   const [plazaSelectedTags, setPlazaSelectedTags] = useState<string[]>(["全部"])
   const [selectedShares, setSelectedShares] = useState<string[]>([])
@@ -1190,6 +1191,14 @@ export default function BookmarkManager() {
               <Button
                 variant="outline"
                 className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
+                onClick={() => setActiveTab("smart-search")}
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                智能搜索
+              </Button>
+              <Button
+                variant="outline"
+                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
                 onClick={() => setActiveTab("my-bookmarks")}
               >
                 <Home className="w-4 h-4 mr-2" />
@@ -1212,6 +1221,9 @@ export default function BookmarkManager() {
           {/* 主要内容区域 */}
           <div className="px-6 pb-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+              <TabsContent value="smart-search">
+                <SmartSearch />
+              </TabsContent>
               <TabsContent value="my-bookmarks" className="space-y-8">
                 {/* 标语 */}
                 <div className="text-center py-12">
@@ -1653,10 +1665,6 @@ export default function BookmarkManager() {
               </TabsContent>
 
               <TabsContent value="plaza" className="space-y-8">
-                <div className="text-center py-12">
-                  <h2 className="text-4xl font-bold text-white mb-4">书签广场</h2>
-                  <p className="text-muted-foreground text-lg">发现和收藏他人分享的精彩书签</p>
-                </div>
 
                 {/* 广场搜索和筛选 */}
                 <div className="space-y-6">
