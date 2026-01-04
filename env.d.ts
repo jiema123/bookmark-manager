@@ -7,15 +7,17 @@ import type { Request as CfRequest, ExecutionContext } from '@cloudflare/workers
 
 declare module 'next' {
   export interface NextRequest extends Request {
-    env?: Env
+    env?: Env & {
+      BROWSERLESS_TOKENS?: string;
+    }
   }
 }
 
 // 扩展 context 类型以包含 env
 declare global {
   namespace NodeJS {
-    interface ProcessEnv extends Env {}
+    interface ProcessEnv extends Env { }
   }
 }
 
-export {}
+export { }

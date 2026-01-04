@@ -17,7 +17,7 @@ id = "Cloudflare dashboard 创建后替换" # 需要在 Cloudflare dashboard 创
 # 环境变量
 [vars]
 ENVIRONMENT = "production"
-
+BROWSERLESS_TOKENS = "token1,token2"
 # Preview 环境的 KV 命名空间（用于本地预览和预览部署）
 [env.preview]
 name = "bookmark-manager-preview"

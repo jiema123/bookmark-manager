@@ -34,4 +34,3 @@ worker-configuration.d.ts
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-wrangler.toml

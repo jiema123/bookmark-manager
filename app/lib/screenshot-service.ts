@@ -1,13 +1,6 @@
 import { getRequestContext } from '@cloudflare/next-on-pages';
 
 export class ScreenshotService {
-    private static BROWSERLESS_TOKENS = [
-        '2TjGdjPl8Ekbgv1f4ccad3434a80b1fa52772fbc5b8a62681',
-        '2TjH4QHBFX5hD3c5ac2a0b704cce2993c085abfa15b21105e',
-        '2TjHXL7XutO7yfgff7fa22fbd6088a4cb059ce78c365ae341',
-        '2TjHYoazfeVe2Pvcef4ba480cc29a684ebe096e46a1e5efda',
-        '2TjHs1M58TCV4Vd7cc568f16c24e58564619cbe0a82e1154b'
-    ];
     private static KV_BINDING_NAME = 'SCREENSHOT_KV';
 
     /**
@@ -55,8 +48,9 @@ export class ScreenshotService {
             console.log('No KV binding found, skipping cache lookup.');
         }
 
+
         // 2. Fetch from Browserless with Retries
-        let availableTokens = [...this.BROWSERLESS_TOKENS];
+        let availableTokens = [...this.getTokens()];
         let base64Image: string | null = null;
         let lastError: any = null;
 
@@ -133,5 +127,34 @@ export class ScreenshotService {
         }
 
         return Buffer.from(base64Image, 'base64');
+    }
+
+    /**
+     * Helper to get environment variables from context
+     */
+    private static getEnv(): any {
+        try {
+            // @ts-ignore
+            const ctx = getRequestContext();
+            return ctx?.env || {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    /**
+     * Gets available tokens from environment variable or falls back to public defaults for dev/demo
+     */
+    private static getTokens(): string[] {
+        const env = this.getEnv();
+        const tokensStr = env.BROWSERLESS_TOKENS;
+        if (tokensStr) {
+            return tokensStr.split(',').map((t: string) => t.trim()).filter(Boolean);
+        }
+
+        // Fallback for dev or missing env
+        return [
+            '2TjGdjPl8Ekbgv1f4ccad3434a80b1fa52772fbc5b8a62681'
+        ];
     }
 }
