@@ -41,99 +41,62 @@ export default function FetchMetadataButton({
     setHasFetched(false)
 
     try {
-      // 1. 使用Jina AI获取网站描述
-      let websiteTitle = ""
-      let websiteDescription = ""
-
-      try {
-        const jinaResponse = await fetch(`https://r.jina.ai/${encodeURIComponent(url)}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        })
-
-        if (jinaResponse.ok) {
-          const jinaData = await jinaResponse.json()
-          websiteTitle = jinaData.data?.title || url
-          websiteDescription = jinaData.data?.description || ""
-        } else {
-          console.error("Jina API返回错误:", await jinaResponse.text())
-          throw new Error("无法获取网站信息")
-        }
-      } catch (error) {
-        console.error("获取网站信息失败:", error)
-        throw new Error("获取网站信息失败，请检查网址是否正确")
-      }
-
-      // 2. 如果AI功能启用，使用大模型生成标签
-      let generatedTags: string[] = []
-
-      if (aiSettings.enabled && websiteDescription) {
-        try {
-          const modelResponse = await fetch(aiSettings.modelHost + "/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${aiSettings.apiKey}`,
+      const response = await fetch("/api/gemini", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gemini-3-flash-preview",
+          messages: [
+            {
+              role: "system",
+              content:
+                "请根据我提供的网址，利用联网搜索获取该网站的最新信息（包括官方介绍、核心功能、用户评价及背景），并严格按照以下模板撰写介绍，返回内容不超过200字，只返回结果不要做解释：\n**网站描述：[网站名称]**\n**概述：**\n[1-2句话概括网站的核心价值及主要功能，突出一句话介绍。]\n**关键特点：**\n* **[特点1]**：[简述优势]\n* **[特点2]**：[简述优势]\n* **[特点3]**：[简述优势]\n* **[特点4]**：[简述优势]\n**目标受众：**\n[列出适用人群及场景]\n**公司/站点信息：**\n[创始人/公司、成立时间、运营模式（免费/商业/开源）及背景]",
             },
-            body: JSON.stringify({
-              model: aiSettings.modelName,
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    '给定你一些网站的描述信息，判断总结出发当前网站是属于什么类型的网站，总结出3-5个标签，每个标签限定在2-4个字,如果是英文请翻译成中文再处理，返回一个JSON对象，格式为{"tags":["标签1","标签2","标签3"]}',
-                },
-                {
-                  role: "user",
-                  content: `标题: ${websiteTitle}\n描述: ${websiteDescription}`,
-                },
-              ],
-            }),
-          })
+            {
+              role: "user",
+              content: url,
+            },
+          ],
+        }),
+      })
 
-          if (modelResponse.ok) {
-            const modelData = await modelResponse.json()
-            const content = modelData.choices[0]?.message?.content
-
-            try {
-              // 尝试解析返回的JSON
-              const parsedContent = JSON.parse(content)
-              if (Array.isArray(parsedContent.tags)) {
-                generatedTags = parsedContent.tags.filter((tag) => typeof tag === "string")
-              }
-            } catch (parseError) {
-              // 如果解析失败，尝试从文本中提取标签
-              console.error("解析AI返回内容失败:", parseError)
-              const tagMatches = content.match(/"([^"]+)"/g)
-              if (tagMatches) {
-                generatedTags = tagMatches.map((match) => match.replace(/"/g, "")).filter(Boolean)
-              }
-            }
-          } else {
-            console.error("AI API返回错误:", await modelResponse.text())
-          }
-        } catch (error) {
-          console.error("生成标签失败:", error)
-          // 继续使用已获取的信息，但不生成标签
-        }
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`)
       }
 
-      // 3. 返回获取的数据
+      const data: any = await response.json()
+      const content = data.choices[0]?.message?.content
+
+      if (!content) {
+        throw new Error("No content received from AI")
+      }
+
+      // Extract title from the specific format **网站描述：[Title]**
+      const titleMatch = content.match(/\*\*网站描述：(.*?)\*\*/)
+      const extractedTitle = titleMatch ? titleMatch[1].trim() : url
+
+      // The description is the full content since it follows the template
+      const description = content
+
+      // The new prompt does not generate tags, so we return an empty list or try to extract if possible.
+      // Given strict stricture, we simply return empty tags.
+      const generatedTags: string[] = []
+
       onFetchComplete({
-        title: websiteTitle || url,
-        description: websiteDescription || "",
+        title: extractedTitle,
+        description: description,
         tags: generatedTags,
       })
 
       setHasFetched(true)
       toast({
         title: "网站信息获取成功",
-        description: generatedTags.length > 0 ? `已生成 ${generatedTags.length} 个标签` : "已获取网站描述",
+        description: "已获取网站详细介绍",
       })
     } catch (error) {
-      console.error("获取元数据错误:", error)
+      console.error("Fetch metadata error:", error)
       toast({
         title: "获取失败",
         description: error instanceof Error ? error.message : "无法获取网站信息",
@@ -151,9 +114,8 @@ export default function FetchMetadataButton({
       size="sm"
       onClick={fetchMetadata}
       disabled={isFetching || isDisabled || !url}
-      className={`${
-        hasFetched ? "bg-green-700/50 border-green-600" : "bg-slate-700/50 border-slate-600"
-      } text-white hover:bg-purple-700/50`}
+      className={`${hasFetched ? "bg-green-700/50 border-green-600" : "bg-slate-700/50 border-slate-600"
+        } text-white hover:bg-purple-700/50`}
     >
       {isFetching ? (
         <>

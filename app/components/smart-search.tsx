@@ -88,11 +88,10 @@ export default function SmartSearch() {
         setResults([]) // Clear previous results
 
         try {
-            const response = await fetch("https://gemini-api.21588.org/v1beta/openai/chat/completions", {
+            const response = await fetch("/api/gemini", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer AIzaSyC75amyasCYEBQOayzlyzhyXQMMlDEvG54"
                 },
                 body: JSON.stringify({
                     model: "gemini-3-flash-preview",
