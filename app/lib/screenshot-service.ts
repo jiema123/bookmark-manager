@@ -49,7 +49,50 @@ export class ScreenshotService {
         }
 
 
-        // 2. Fetch from Browserless with Retries
+        // 2. Try screenshotof.com as a fallback/primary source
+        try {
+            const domain = new URL(url).hostname;
+            const screenshotofUrl = `https://screenshotof.com/${domain}`;
+            console.log(`Trying screenshotof.com for: ${domain}`);
+
+            const response = await fetch(screenshotofUrl, {
+                method: 'GET',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+            });
+
+            if (response.ok) {
+                const contentLength = response.headers.get('content-length');
+                console.log(`screenshotof.com response length: ${contentLength}`);
+
+                if (contentLength !== '333485') {
+                    const arrayBuffer = await response.arrayBuffer();
+                    const imageBuffer = Buffer.from(arrayBuffer);
+
+                    // Optionally save to KV cache
+                    if (kv) {
+                        try {
+                            const base64 = imageBuffer.toString('base64');
+                            await kv.put(cacheKey, base64, { expirationTtl: 86400 });
+                            console.log('Saved screenshotof.com result to KV cache');
+                        } catch (kvError) {
+                            console.error('KV put error (screenshotof):', kvError);
+                        }
+                    }
+
+                    return imageBuffer;
+                } else {
+                    console.log('screenshotof.com returned placeholder (length 333485), falling back to Browserless');
+                }
+            } else {
+                console.log(`screenshotof.com failed with status: ${response.status}`);
+            }
+        } catch (e) {
+            console.warn('Error fetching from screenshotof.com:', e);
+        }
+
+        // 3. Fetch from Browserless with Retries
         let availableTokens = [...this.getTokens()];
         let base64Image: string | null = null;
         let lastError: any = null;
