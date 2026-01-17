@@ -52,7 +52,7 @@ export class ScreenshotService {
         // 2. Try screenshotof.com as a fallback/primary source
         try {
             const domain = new URL(url).hostname;
-            const screenshotofUrl = `https://screenshotof.com/${domain}`;
+            const screenshotofUrl = `https://screenshort.21588.org/${domain}`;
             console.log(`Trying screenshotof.com for: ${domain}`);
 
             const response = await fetch(screenshotofUrl, {

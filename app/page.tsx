@@ -356,7 +356,7 @@ export default function BookmarkManager() {
         if (urlObj.hostname) {
           setNewBookmark(prev => ({
             ...prev,
-            image: `https://screenshotof.com/${urlObj.hostname}`
+            image: `https://screenshort.21588.org/${urlObj.hostname}`
           }))
         }
       } catch (e) { }
@@ -371,7 +371,7 @@ export default function BookmarkManager() {
         if (urlObj.hostname) {
           setEditingBookmark(prev => prev ? ({
             ...prev,
-            image: `https://screenshotof.com/${urlObj.hostname}`
+            image: `https://screenshort.21588.org/${urlObj.hostname}`
           }) : null)
         }
       } catch (e) { }
