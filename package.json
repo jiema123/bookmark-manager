@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "pages:build": "pnpm next-on-pages",
-    "preview": "pnpm pages:build && wrangler pages dev .vercel/output/static --port 8022",
-    "deploy": "pnpm pages:build && wrangler pages deploy",
+    "pages:build": "next-on-pages",
+    "preview": "pnpm run pages:build && wrangler pages dev .vercel/output/static --port 8022",
+    "deploy": "pnpm run pages:build && wrangler pages deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
   },
   "dependencies": {

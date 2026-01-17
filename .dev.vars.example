@@ -4,3 +4,6 @@
 # KV Namespace IDs (从 Cloudflare Dashboard 获取)
 # BOOKMARKS_KV_ID=your-kv-namespace-id
 # PLAZA_KV_ID=your-plaza-kv-namespace-id
+
+# Gemini API Key
+GEMINI_API_KEY=your-gemini-api-key

@@ -5,19 +5,20 @@ pages_build_output_dir = ".vercel/output/static"
 # KV 命名空间绑定
 [[kv_namespaces]]
 binding = "BOOKMARKS_KV"
-id = "Cloudflare dashboard 创建后替换"  # 需要在 Cloudflare dashboard 创建后替换
+id = "07f3d32d52444f88a4968ee2b1607b63"  # 需要在 Cloudflare dashboard 创建后替换
 
 [[kv_namespaces]]
 binding = "PLAZA_KV"
-id = "Cloudflare dashboard 创建后替换"  # 需要在 Cloudflare dashboard 创建后替换
+id = "7e9189ff5b244201ae7adc8d8ebaf7a6"  # 需要在 Cloudflare dashboard 创建后替换
 
 [[kv_namespaces]]
 binding = "SCREENSHOT_KV"
-id = "Cloudflare dashboard 创建后替换" # 需要在 Cloudflare dashboard 创建后替换
+id = "352004f1be8148af84c0b0b8efa6ab3b" # 需要在 Cloudflare dashboard 创建后替换
 # 环境变量
 [vars]
 ENVIRONMENT = "production"
-BROWSERLESS_TOKENS = "token1,token2"
+BROWSERLESS_TOKENS = "2TjGdjPl8Ekbgv1f4ccad3434a80b1fa52772fbc5b8a62681,2TjH4QHBFX5hD3c5ac2a0b704cce2993c085abfa15b21105e,2TjHXL7XutO7yfgff7fa22fbd6088a4cb059ce78c365ae341,2TjHYoazfeVe2Pvcef4ba480cc29a684ebe096e46a1e5efda,2TjHs1M58TCV4Vd7cc568f16c24e58564619cbe0a82e1154b"
+GEMINI_API_KEY = "AIzaSyDcC0pgkcy7rJOWHCdVnHYZgCaQmUPCTDc"
 # Preview 环境的 KV 命名空间（用于本地预览和预览部署）
 [env.preview]
 name = "bookmark-manager-preview"
