@@ -120,6 +120,7 @@ export default function BookmarkManager() {
   const [currentEditingTags, setCurrentEditingTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
   const [isEditingMode, setIsEditingMode] = useState(false)
+  const [showAmbientEffect, setShowAmbientEffect] = useState(true)
   const { toast } = useToast()
 
   // 新书签表单状态
@@ -145,6 +146,11 @@ export default function BookmarkManager() {
     const savedShareSettings = localStorage.getItem("shareSettings")
     const savedAISettings = localStorage.getItem("aiSettings")
 
+    const savedAmbientEffect = localStorage.getItem("showAmbientEffect")
+
+    if (savedAmbientEffect !== null) {
+      setShowAmbientEffect(savedAmbientEffect === "true")
+    }
     if (savedBookmarks) {
       try {
         const parsed = JSON.parse(savedBookmarks)
@@ -339,6 +345,36 @@ export default function BookmarkManager() {
             : []),
         ].join(", "),
       }))
+    }
+  }
+
+  // 自动填充新书签的图片地址
+  const handleUrlBlur = () => {
+    if (newBookmark.url && !newBookmark.image) {
+      try {
+        const urlObj = new URL(newBookmark.url)
+        if (urlObj.hostname) {
+          setNewBookmark(prev => ({
+            ...prev,
+            image: `https://screenshotof.com/${urlObj.hostname}`
+          }))
+        }
+      } catch (e) { }
+    }
+  }
+
+  // 自动填充编辑书签的图片地址
+  const handleEditUrlBlur = () => {
+    if (editingBookmark && editingBookmark.url && !editingBookmark.image) {
+      try {
+        const urlObj = new URL(editingBookmark.url)
+        if (urlObj.hostname) {
+          setEditingBookmark(prev => prev ? ({
+            ...prev,
+            image: `https://screenshotof.com/${urlObj.hostname}`
+          }) : null)
+        }
+      } catch (e) { }
     }
   }
 
@@ -1174,7 +1210,7 @@ export default function BookmarkManager() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden selection:bg-primary/30">
-        <SnowEffect />
+        <SnowEffect enabled={showAmbientEffect} />
         {/* Ambient Background Glow */}
         <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none z-0" />
         <div className="fixed bottom-0 right-0 w-[800px] h-[600px] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none z-0" />
@@ -1187,33 +1223,33 @@ export default function BookmarkManager() {
               <h1 className="text-2xl font-bold text-white">JieMa66</h1>
               <script defer src="https://umami-jiema66.env.pm/script.js" data-website-id="188469dd-eaf0-4e5d-9cd9-d93cd78fbf79"></script>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <Button
                 variant="outline"
-                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
+                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                 onClick={() => setActiveTab("smart-search")}
               >
-                <Sparkles className="w-4 h-4 mr-2" />
-                智能搜索
+                <Sparkles className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">智能搜索</span>
               </Button>
               <Button
                 variant="outline"
-                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
+                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                 onClick={() => setActiveTab("my-bookmarks")}
               >
-                <Home className="w-4 h-4 mr-2" />
-                我的主页
+                <Home className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">我的主页</span>
               </Button>
               <Button
                 variant="outline"
-                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50"
+                className="bg-secondary/50 border-white/10 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                 onClick={() => {
                   setActiveTab("plaza")
                   fetchPlazaBookmarks()
                 }}
               >
-                <Globe className="w-4 h-4 mr-2" />
-                书签广场
+                <Globe className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">书签广场</span>
               </Button>
             </div>
           </div>
@@ -1226,22 +1262,21 @@ export default function BookmarkManager() {
               </TabsContent>
               <TabsContent value="my-bookmarks" className="space-y-8">
                 {/* 标语 */}
-                <div className="text-center py-12">
-                  <h2 className="text-7xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 mb-8 tracking-tight glow-text leading-tight py-2">
+                <div className="text-center py-8 md:py-12">
+                  <h2 className="text-4xl sm:text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 mb-8 tracking-tight glow-text leading-tight py-2">
                     赛博智库 · 链接无限
                   </h2>
                 </div>
 
-                {/* 功能按钮组 */}
-                <div className="flex flex-wrap justify-center gap-4 mb-8">
+                <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8">
                   <>
                     <Button
                       onClick={() => document.getElementById("import-file-input")?.click()}
                       variant="outline"
-                      className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                      className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                     >
-                      <Upload className="w-4 h-4 mr-2" />
-                      导入书签
+                      <Upload className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">导入书签</span>
                     </Button>
                     <input
                       id="import-file-input"
@@ -1255,10 +1290,10 @@ export default function BookmarkManager() {
                     <Button
                       onClick={() => document.getElementById("import-browser-bookmarks-input")?.click()}
                       variant="outline"
-                      className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                      className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                     >
-                      <FileText className="w-4 h-4 mr-2" />
-                      导入浏览器收藏夹
+                      <FileText className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">导入浏览器收藏夹</span>
                     </Button>
                     <input
                       id="import-browser-bookmarks-input"
@@ -1271,19 +1306,19 @@ export default function BookmarkManager() {
                   <Button
                     onClick={exportData}
                     variant="outline"
-                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                   >
-                    <Download className="w-4 h-4 mr-2" />
-                    导出JSON
+                    <Download className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">导出JSON</span>
                   </Button>
                   <Dialog open={isCloudDialogOpen} onOpenChange={setIsCloudDialogOpen}>
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
-                        className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                        className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                       >
-                        <Cloud className="w-4 h-4 mr-2" />
-                        云端备份
+                        <Cloud className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">云端备份</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-card border-border">
@@ -1348,27 +1383,39 @@ export default function BookmarkManager() {
                   </Dialog>
                   <Button
                     variant="outline"
-                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                     onClick={() => setIsShareDialogOpen(true)}
                   >
-                    <Share2 className="w-4 h-4 mr-2" />
-                    分享设置
+                    <Share2 className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">分享设置</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                     onClick={() => setIsBatchManageDialogOpen(true)}
                   >
-                    <CheckSquare className="w-4 h-4 mr-2" />
-                    批量管理
+                    <CheckSquare className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">批量管理</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50"
+                    className="bg-secondary/50 border-white/10 hover:bg-secondary/80 text-white hover:bg-purple-700/50 px-3 sm:px-4"
                     onClick={() => setIsAISettingsDialogOpen(true)}
                   >
-                    <Cpu className="w-4 h-4 mr-2" />
-                    AI 设置
+                    <Cpu className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">AI 设置</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className={`${showAmbientEffect ? "bg-primary/50 text-white" : "bg-secondary/50"} border-white/10 hover:bg-secondary/80 px-3 sm:px-4`}
+                    onClick={() => {
+                      const next = !showAmbientEffect
+                      setShowAmbientEffect(next)
+                      localStorage.setItem("showAmbientEffect", String(next))
+                    }}
+                  >
+                    <Sparkles className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">特效开关</span>
                   </Button>
                 </div>
 
@@ -1441,6 +1488,7 @@ export default function BookmarkManager() {
                               id="url"
                               value={newBookmark.url}
                               onChange={(e) => setNewBookmark((prev) => ({ ...prev, url: e.target.value }))}
+                              onBlur={handleUrlBlur}
                               placeholder="https://example.com"
                               className="bg-secondary/40 border-white/10 text-white"
                             />
@@ -2169,6 +2217,7 @@ export default function BookmarkManager() {
                           id="editUrl"
                           value={editingBookmark.url}
                           onChange={(e) => setEditingBookmark((prev) => (prev ? { ...prev, url: e.target.value } : null))}
+                          onBlur={handleEditUrlBlur}
                           className="bg-secondary/40 border-white/10 text-white"
                         />
                         <FetchMetadataButton

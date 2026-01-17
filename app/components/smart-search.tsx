@@ -70,7 +70,7 @@ export default function SmartSearch() {
         setResults([]) // Clear previous results
 
         try {
-            const response = await fetch("/api/chat", {
+            const response = await fetch("/api/gemini", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -149,10 +149,10 @@ export default function SmartSearch() {
             {/* Search Header Area */}
             <div className={`w-full max-w-3xl flex flex-col items-center gap-8 ${hasSearched ? "mb-8 gap-4" : "mb-12"}`}>
                 <div className={`flex items-center gap-3 transition-all ${hasSearched ? "scale-75" : "scale-100"}`}>
-                    <div className="p-3 bg-primary/20 rounded-xl glow-box">
-                        <Sparkles className="w-8 h-8 text-primary" />
+                    <div className="p-2 sm:p-3 bg-primary/20 rounded-xl glow-box">
+                        <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                     </div>
-                    <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/120">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/120 whitespace-nowrap">
                         Smart Search
                     </h1>
                 </div>
