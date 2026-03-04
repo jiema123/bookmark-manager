@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2, LinkIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { DEFAULT_AI_MODEL } from "@/lib/ai-config"
 
 interface FetchMetadataButtonProps {
   url: string
@@ -47,7 +48,7 @@ export default function FetchMetadataButton({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gemini-3-flash-preview",
+          model: aiSettings.modelName || DEFAULT_AI_MODEL,
           messages: [
             {
               role: "system",

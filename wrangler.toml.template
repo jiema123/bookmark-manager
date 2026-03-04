@@ -18,7 +18,9 @@ id = "352004f1be8148af84c0b0b8efa6ab3b" # 需要在 Cloudflare dashboard 创建�
 [vars]
 ENVIRONMENT = "production"
 BROWSERLESS_TOKENS = ""
-GEMINI_API_KEY = ""
+# GEMINI_API_KEY 请通过 Cloudflare Pages Secret 配置，避免与现有绑定重名
+GEMINI_API_BASE_URL = "https://gemini-api.21588.org/v1beta/openai"
+GEMINI_MODEL = "gemini-3-flash-preview"
 # Preview 环境的 KV 命名空间（用于本地预览和预览部署）
 [env.preview]
 name = "bookmark-manager-preview"

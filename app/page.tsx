@@ -48,6 +48,7 @@ import FetchMetadataButton from "./components/fetch-metadata-button"
 import BatchManageDialog from "./components/batch-manage-dialog"
 import SnowEffect from "./components/snow-effect"
 import SmartSearch from "./components/smart-search"
+import { DEFAULT_CLIENT_AI_SETTINGS, type AISettings } from "@/lib/ai-config"
 
 interface Bookmark {
   id: string
@@ -63,13 +64,6 @@ interface Bookmark {
 interface CloudSettings {
   key: string
   secret: string
-}
-
-interface AISettings {
-  enabled: boolean
-  modelHost: string
-  apiKey: string
-  modelName: string
 }
 
 interface SharedBookmark extends Bookmark {
@@ -102,12 +96,7 @@ export default function BookmarkManager() {
   const [sharingBookmark, setSharingBookmark] = useState<Bookmark | null>(null)
   const [cloudSettings, setCloudSettings] = useState<CloudSettings>({ key: "", secret: "" })
   const [shareSettings, setShareSettings] = useState<ShareSettings>({ shareSecret: "", displayName: "" })
-  const [aiSettings, setAISettings] = useState<AISettings>({
-    enabled: false,
-    modelHost: "https://openkey.cloud/v1",
-    apiKey: "sk-0AGhSrqYzhL09KSe81FfB0D5EeE34eCf970a4b0494C14c4e",
-    modelName: "gpt-3.5-turbo",
-  })
+  const [aiSettings, setAISettings] = useState<AISettings>(DEFAULT_CLIENT_AI_SETTINGS)
   const [sharedBookmarks, setSharedBookmarks] = useState<SharedBookmark[]>([])
   const [mySharedBookmarks, setMySharedBookmarks] = useState<SharedBookmark[]>([])
   const [activeTab, setActiveTab] = useState("smart-search")

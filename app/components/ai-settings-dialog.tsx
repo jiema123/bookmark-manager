@@ -8,13 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
-
-interface AISettings {
-  enabled: boolean
-  modelHost: string
-  apiKey: string
-  modelName: string
-}
+import { DEFAULT_CLIENT_AI_SETTINGS, type AISettings } from "@/lib/ai-config"
 
 interface AISettingsDialogProps {
   open: boolean
@@ -84,7 +78,7 @@ export default function AISettingsDialog({ open, onOpenChange, settings, onSave 
           description: "AI模型配置有效",
         })
       } else {
-        const errorData = await response.json()
+        const errorData = await response.json() as any
         throw new Error(errorData.error?.message || "Unknown error")
       }
     } catch (error) {
@@ -109,12 +103,7 @@ export default function AISettingsDialog({ open, onOpenChange, settings, onSave 
   }
 
   const resetToDefaults = () => {
-    setAISettings({
-      enabled: true,
-      modelHost: "https://openkey.cloud/v1",
-      apiKey: "sk-0AGhSrqYzhL09KSe81FfB0D5EeE34eCf970a4b0494C14c4e",
-      modelName: "gpt-3.5-turbo",
-    })
+    setAISettings({ ...DEFAULT_CLIENT_AI_SETTINGS, enabled: true })
     toast({
       title: "已重置为默认设置",
     })
@@ -157,7 +146,7 @@ export default function AISettingsDialog({ open, onOpenChange, settings, onSave 
               id="modelHost"
               value={aiSettings.modelHost}
               onChange={(e) => setAISettings((prev) => ({ ...prev, modelHost: e.target.value }))}
-              placeholder="https://openkey.cloud/v1"
+              placeholder={DEFAULT_CLIENT_AI_SETTINGS.modelHost}
               className="mt-1 bg-slate-700 border-purple-600 text-white"
               disabled={!aiSettings.enabled}
             />
@@ -186,7 +175,7 @@ export default function AISettingsDialog({ open, onOpenChange, settings, onSave 
               id="modelName"
               value={aiSettings.modelName}
               onChange={(e) => setAISettings((prev) => ({ ...prev, modelName: e.target.value }))}
-              placeholder="gpt-3.5-turbo"
+              placeholder={DEFAULT_CLIENT_AI_SETTINGS.modelName}
               className="mt-1 bg-slate-700 border-purple-600 text-white"
               disabled={!aiSettings.enabled}
             />

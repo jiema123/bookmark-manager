@@ -7,3 +7,9 @@
 
 # Gemini API Key
 GEMINI_API_KEY=your-gemini-api-key
+
+# Gemini API Base URL (optional)
+GEMINI_API_BASE_URL=https://gemini-api.21588.org/v1beta/openai
+
+# Gemini model name (optional)
+GEMINI_MODEL=gemini-3-flash-preview

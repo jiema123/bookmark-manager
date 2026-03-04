@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerAIConfig } from "@/lib/ai-config";
 
 export const runtime = 'edge';
 
@@ -19,27 +20,27 @@ Format请按以下卡片格式输出每个推荐：
 
 export async function POST(request: NextRequest) {
     try {
-        const { query } = await request.json();
+        const { query } = await request.json() as { query?: string };
 
         if (!query) {
             return NextResponse.json({ error: 'Query is required' }, { status: 400 });
         }
 
-        const apiKey = process.env.GEMINI_API_KEY;
+        const { apiKey, baseUrl, model } = getServerAIConfig();
 
         if (!apiKey) {
             console.error('GEMINI_API_KEY is not configured');
             return NextResponse.json({ error: 'AI Service configuration error' }, { status: 500 });
         }
 
-        const response = await fetch("https://gemini-api.21588.org/v1beta/openai/chat/completions", {
+        const response = await fetch(`${baseUrl}/chat/completions`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: "gemini-3-flash-preview",
+                model,
                 messages: [
                     { role: "system", content: SYSTEM_PROMPT },
                     { role: "user", content: query }
